@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Calculate</title>
+</head>
+<style>
+    .numberButton{width:40px;height:20px;font-size:10px}
+    .operatorButton{width:40px;height:20px;font-size:10px}
+    .textButton{text-align: right}
+    input.pos-right-40{
+        position: relative;
+        right: -40px;
+    }
+    input.pos-right-60{
+        position: relative;
+        right: -45px;
+    }
+    input.pos-right-80{
+        position: relative;
+        right: -55px;
+    }
+
+    #CE{
+        width: 5.5em;
+    }
+    #C{
+        width: 3em;
+    }
+</style>
+<body>
+<!--html5实现计算器界面-->
+    <!--显示框-->
+<div>
+    <input type="text" id="textResult" class="textButton" value="" size="40"/>
+    <table>
+        <tr>
+            <td>
+
+                <input type="button" class="pos-right-40" value="Backspace"/>
+                <input id="CE" type="button" class="pos-right-60" value="CE";/>
+                <input id="C" type="button" class="pos-right-80" value="C"/>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <input type="button" value="MC" class="numberButton";/>
+                <input type="button" value="7" class="numberButton";/>
+                <input type="button" value="8" class="numberButton";/>
+                <input type="button" value="9" class="numberButton"/>
+                <input type="button" value="/" class="numberButton";/>
+                <input type="button" value="sqrt" class="numberButton";/>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="button" value="MR" class="numberButton";/>
+                <input type="button" value="4" class="numberButton";/>
+                <input type="button" value="5" class="numberButton" ;/>
+                <input type="button" value="6" class="numberButton" ;/>
+                <input type="button" value="*" class="operatorButton";/>
+                <input type="button" value="%" class="numberButton";/>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="button" value="MS" class="numberButton";/>
+                <input type="button" value="1" class="numberButton" ;/>
+                <input type="button" value="2" class="numberButton" ;/>
+                <input type="button" value="3" class="numberButton" ;/>
+                <input type="button" value="-" class="operatorButton" ;/>
+                <input type="button" value="a/x" class="numberButton";/>
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="button" value="M+" class="numberButton";/>
+                <input type="button" value="0" class="numberButton" ;/>
+                <input type="button" value="+/-" class="numberButton" ;/>
+                <input type="button" value="." class="operatorButton" ;/>
+                <input type="button" value="+" class="operatorButton" ;/>
+                <input type="button" value="=" class="numberButton";/>
+
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>
