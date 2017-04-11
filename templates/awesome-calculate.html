@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Awesome Calculate</title>
+    <script type="text/javascript" src="../awesome-calculate.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    function test() {
+        var test1 = '1 + 2-3';
+        var test2 = '(1+2)-3*4';
+        var test3 = '1.5+2.5+4*(3/5)';
+        var test4 = '1++5';
+        var result1 = awesomeCalculator(test1);
+        var result2 = awesomeCalculator(test2);
+        var result3 = awesomeCalculator(test3);
+        var result4 = awesomeCalculator(test4);
+        document.writeln(result1);
+        document.writeln(result2);
+        document.writeln(result3);
+        document.writeln(result4);
+
+    }
+
+    test();
+</script>
+</body>
+</html>
