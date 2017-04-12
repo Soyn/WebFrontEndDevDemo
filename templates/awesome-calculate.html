@@ -4,8 +4,61 @@
     <meta charset="UTF-8">
     <title>Awesome Calculate</title>
     <script type="text/javascript" src="../awesome-calculate.js"></script>
+	<link rel="stylesheet" type="text/css" href="../css/awesome-calculator.css">
 </head>
 <body>
+<div class="body">
+	<div id="title">
+		<p id="title">计算器</p>
+	</div>
+	<div id="display">
+		<input type="text" id="display"/>
+	</div>
+	<div id="keyboard">
+		<table>
+			<tr>
+				<td>
+					<button class="operator">CE</button>
+					<button>C</button>
+					<button><-</button>
+					<button>/</button>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<button>7</button>
+					<button>8</button>
+					<button>9</button>
+					<button>*</button>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<button>4</button>
+					<button>5</button>
+					<button>6</button>
+					<button>-</button>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<button>1</button>
+					<button>2</button>
+					<button>3</button>
+					<button>+</button>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<button>00</button>
+					<button>0</button>
+					<button>.</button>
+					<button>=</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
 <script type="text/javascript">
     function test() {
         var test1 = '1 + 2-3';
@@ -22,8 +75,6 @@
         document.writeln(result4);
 
     }
-
-    test();
 </script>
 </body>
 </html>
