@@ -21,50 +21,47 @@ div#keyboard {
     height: 410px;
 }
 
-p#title {
-    font-size: 120%;
+p#calculator {
     font-family: Arial;
+    font-size: 120%;
     text-align: left;
     padding: 6px;
     margin: 0px;
 }
 
-input#display {
-    background-color: white;
-    font-size: 200%;
-    display: block;
-    width: 100%;
-    height: 100px;
-    text-align: right;
-    border-radius: 5px 10px 5px 10px;
-
-}
-
-button{
+td{
+    font-family: Arial;
     float: left;
     margin: 0px;
-    font-size: 140%;
+    font-size: 120%;
     border: 0px;
     padding: 0px;
     width: 98px;
     height: 60px;
     padding: 0px;
+    text-align: center;
+    font-size: 200%;
     background-color: rgba(198, 198, 198, 0.07);
 }
-button:hover{
+td:hover{
     color: rgba(166, 166, 166, 0.33);
-}
-button:after {
-    content: "";
-    display: block;
-    position: absolute;
-    opacity: 0;
-    transition: all 0.8s;
-}
-button:active {
-    opacity: 1;
-    transition: 0s;
 }
 table {
     margin: 10px auto 10px auto;
+}
+
+table.content {
+    margin: 0px;
+    background-color: white;
+    width: 100%;
+    height: 100%;
+}
+
+td#monitor, td#result{
+    background-color: white;
+    width: 100%;
+    height: 50%;
+    color: black;
+    text-align: right;
+    font-size: 20px;
 }

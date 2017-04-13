@@ -3,78 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <title>Awesome Calculate</title>
-    <script type="text/javascript" src="../awesome-calculate.js"></script>
 	<link rel="stylesheet" type="text/css" href="../css/awesome-calculator.css">
 </head>
 <body>
 <div class="body">
 	<div id="title">
-		<p id="title">计算器</p>
+		<p id="calculator">计算器</p>
 	</div>
 	<div id="display">
-		<input type="text" id="display"/>
+		<table class="content">
+			<tr>
+				<td id="monitor"></td>
+			</tr>
+			<tr>
+				<td id="result"></td>
+			</tr>
+		</table>
 	</div>
 	<div id="keyboard">
 		<table>
 			<tr>
-				<td>
-					<button class="operator">CE</button>
-					<button>C</button>
-					<button><-</button>
-					<button>/</button>
-				</td>
+					<td onclick="appendContent(this)">(</td>
+					<td onclick="appendContent(this)">)</td>
+					<td onclick="appendContent(this)">DEL</td>
+					<td onclick="appendContent(this)">/</td>
 			</tr>
 			<tr>
-				<td>
-					<button>7</button>
-					<button>8</button>
-					<button>9</button>
-					<button>*</button>
-				</td>
+					<td onclick="appendContent(this)">7</td>
+					<td onclick="appendContent(this)">8</td>
+					<td onclick="appendContent(this)">9</td>
+					<td onclick="appendContent(this)">*</td>
 			</tr>
 			<tr>
-				<td>
-					<button>4</button>
-					<button>5</button>
-					<button>6</button>
-					<button>-</button>
-				</td>
+					<td onclick="appendContent(this)">4</td>
+					<td onclick="appendContent(this)">5</td>
+					<td onclick="appendContent(this)">6</td>
+					<td onclick="appendContent(this)">-</td>
 			</tr>
 			<tr>
-				<td>
-					<button>1</button>
-					<button>2</button>
-					<button>3</button>
-					<button>+</button>
-				</td>
+					<td onclick="appendContent(this)">1</td>
+					<td onclick="appendContent(this)">2</td>
+					<td onclick="appendContent(this)">3</td>
+					<td onclick="appendContent(this)">+</td>
 			</tr>
 			<tr>
-				<td>
-					<button>00</button>
-					<button>0</button>
-					<button>.</button>
-					<button>=</button>
-				</td>
+					<td onclick="appendContent(this)">CLR</td>
+					<td onclick="appendContent(this)">0</td>
+					<td onclick="appendContent(this)">.</td>
+					<td onclick="appendContent(this)">=</td>
 			</tr>
 		</table>
 	</div>
 </div>
-<script type="text/javascript">
-    function test() {
-        var test1 = '1 + 2-3';
-        var test2 = '(1+2)-3*4';
-        var test3 = '1.5+2.5+4*(3/5)';
-        var test4 = '1++5';
-        var result1 = awesomeCalculator(test1);
-        var result2 = awesomeCalculator(test2);
-        var result3 = awesomeCalculator(test3);
-        var result4 = awesomeCalculator(test4);
-        document.writeln(result1);
-        document.writeln(result2);
-        document.writeln(result3);
-        document.writeln(result4);
-
-    }
-</script>
+<script type="text/javascript" src="../awesome-calculate.js"></script>
 </body>
 </html>
