@@ -1,0 +1,43 @@
+#layout {
+    width: 100%;
+    height: 100%;
+    background-color: lavender;
+}
+
+.cell {
+    background-color: white;
+}
+
+.columnHeader {
+    background-color: #e6e6e6;
+}
+
+.rowHeader {
+    background-color: #e6e6e6;
+}
+.columnHeader:hover{
+    background-color: #00b33c;
+}
+.rowHeader:hover {
+    background-color: #00b33c;
+}
+
+table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+td {
+    width: 1%;
+    height: 20px;
+    margin: 0px;
+    border: 0.1em solid #d9d9d9;
+    padding: 1px;
+    text-align: center;
+}
+
+.cell {
+    text-align: left;
+}
