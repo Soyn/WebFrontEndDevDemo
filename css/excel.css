@@ -1,47 +1,62 @@
 #layout {
-    width: 100%;
-    height: 100%;
+    width: 1300px;
+    height: 800px;
+    background-color: white;
+    margin: 10px auto 10px auto;
+    overflow: scroll;
+}
+
+td.cell {
+    width: 53px;
+    height: 20px;
     background-color: white;
 }
 
-.cell {
-    background-color: white;
-}
-
-.columnHeader {
+td.columnHeader {
     background-color: #e6e6e6;
 }
 
-.rowHeader {
+td.rowHeader {
     background-color: #e6e6e6;
 }
-.columnHeader:hover{
+td.columnHeader:hover{
     background-color: #00b33c;
 }
-.rowHeader:hover {
+td.rowHeader:hover {
     background-color: #00b33c;
 }
 
 table {
-    width: 1300px;
-    height: 500px;
     border-collapse: collapse;
     background-color: white;
-    table-layout: fixed;
+    overflow:  hidden;
+    text-overflow: clip;
     margin: 10px auto 10px auto;
 }
 
 td {
-    width: 5px;
-    height: 20px;
     margin: 0px;
     border: 0.1em solid #d9d9d9;
     padding: 1px;
     text-align: center;
 }
 
-.cell {
-    width: 5px;
+div.menu > table {
+    margin: 0px;
+    border: thin solid #808080;
+    cursor: default;
+    background-color: white;
+    font-family: Arial;
+    font-size: 4px;
+    position: absolute;
+}
+tr > button {
+    width: 50px;
     height: 20px;
-    text-align: left;
+    text-align: center;
+    background-color: white;
+}
+
+tr.rowHeader:hover {
+    background-color: #d8d7d4;
 }
