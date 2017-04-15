@@ -15,7 +15,7 @@ var Util = {
         var layoutDiv = document.getElementById('layout');
         if (layoutDiv) {
             var table = document.createElement('TABLE');
-            table.setAttribute('id', '#');
+            table.setAttribute('id', 'myTable');
             layoutDiv.appendChild(table);
         }
 
@@ -24,7 +24,7 @@ var Util = {
     },
 
     generateTableRow: function () {
-        var table = document.getElementById('#');
+        var table = document.getElementById('myTable');
         if(table) {
             for(var i = 0; i < Util.ROW_NUMBER; ++i) {
                 var tableRow = document.createElement('TR');
@@ -46,6 +46,7 @@ var Util = {
                 currentTableData.setAttribute('class', 'cell');
                 var textNode = document.createElement('text');
 
+
                 if(i == 0 && j > 0) {  // top left is blank
                     textNode.innerHTML = String.fromCharCode(alpha);
                     currentTableData.setAttribute('class', 'columnHeader');
@@ -55,6 +56,8 @@ var Util = {
                     if(j == 0 && i) {
                         currentTableData.setAttribute('class', 'rowHeader');
                         textNode.innerHTML = i;
+                    } else {
+                        textNode.setAttribute('contentEditable', true);
                     }
                 }
 
@@ -64,19 +67,18 @@ var Util = {
         }
     },
 
-    coverDivOnTableData: function (event) {
-        /*var divUsedToInput = document.createElement('div');
-        divUsedToInput.position = 'absolute';
-        divUsedToInput.setAttributeNode('contentEditable', true);
-
-        event.target.innerText = divUsedToInput.innerText;
-        event.target.appendChild(divUsedToInput);*/
-        alert(event.target.nodeName);
+    coverDivOnTableData: function () {
+        alert('sss');
     },
 };
 
 
 document.getElementsByTagName('body').onload = Util.generateTable();
 
-var table = document.getElementsByTagName('table')[0];
-table.addEventListener('onclick', Util.coverDivOnTableData, false);
+document.getElementById('myTable').onclick = test();
+
+function test() {
+    alert('Hello');
+}
+/*
+table.addEventListener('onclick', test, false);*/
