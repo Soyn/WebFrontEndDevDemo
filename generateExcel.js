@@ -81,14 +81,14 @@ var Util = {
 
             for (var i = 0; i < rowNumber; ++i) {
                 var tr = document.createElement('tr');
-                //tr.setAttribute('class', attribute);
-
                 var td = document.createElement('button');
+
                 td.innerText = menuOptions[i];
                 td.setAttribute('id', menuOptions[i]);
                 tr.appendChild(td);
                 menuBody.appendChild(tr);
             }
+
             divMenu.appendChild(menuBody);
             document.body.appendChild(divMenu);
         },
@@ -125,24 +125,51 @@ var Util = {
                 var currentRow = td.parentElement.rowIndex;
                 Util.insertRowCallback = function () {
                     Util.insertRow(currentRow);
+                    Util.hideMenu();
                 };
 
                 Util.deleteRowCallback = function () {
-                    Util.deleteRow(currentRow)
+                    Util.deleteRow(currentRow);
+                    Util.hideMenu();
+
                 };
 
                 Util.clearRowCallback = function () {
                     Util.clearRow(currentRow);
+                    Util.hideMenu();
+
                 };
                 document.getElementById('insert').addEventListener('click', Util.insertRowCallback, false);
                 document.getElementById('delete').addEventListener('click', Util.deleteRowCallback, false);
                 document.getElementById('clear').addEventListener('click', Util.clearRowCallback, false);
+            } else {
+                var currentColumn = td.index;
+
+                Util.insertColumnCallback = function () {
+                    Util.insertColumn(currentColumn);
+                    Util.hideMenu();
+                };
+
+                Util.deleteColumnCallback = function () {
+                    Util.deleteColulmn();
+                    Util.hideMenu();
+                };
+
+                Util.clearColumnCallback = function () {
+                    Util.clearColumn();
+                    Util.hideMenu();
+                }
             }
         },
 
         insertRowCallback: null,
         deleteRowCallback: null,
         clearRowCallback: null,
+
+        insertColumnCallback: null,
+        deleteColumnCallback: null,
+        clearColumnCallback: null,
+
 
         hideMenu: function () {
             document.getElementById('contextMenu').style.display = 'none';
@@ -177,18 +204,49 @@ var Util = {
 
             myTable.insertBefore(newRow, myTable.children[insertedPosition]);
             // update the row number
-            for(var row = insertedPosition + 1; row < myTable.childElementCount; ++row) {
+            for(var row = insertedPosition; row < myTable.childElementCount; ++row) {
                 myTable.children[row].firstElementChild.innerText = row;
             }
         },
 
         deleteRow: function (currentRow) {
-            alert("I'm deleteRow callback!");
+            var myTable = document.getElementById('myTable');
+            myTable.removeChild(myTable.children[currentRow]);
+
+            for(var row = currentRow; row < myTable.childElementCount; ++row) {
+                myTable.children[row].firstElementChild.innerText = row;
+            }
         },
         
         clearRow: function (currentRow) {
-            alert("I'm clearRow callback!");
-        }
+            var myTable = document.getElementById('myTable');
+            var trNode = myTable.children[currentRow];
+            for(var i = 1; i < trNode.childElementCount; ++i) {
+                trNode.children[i].firstElementChild.innerText = '';
+            }
+        },
+
+        insertColumn: function (currentColumn) {
+            var myTable = document.getElementById('myTable');
+            var insertPosition = currentColumn + 1;
+            for(var row = 0; row < myTable.childElementCount; ++row) {
+                var newTD = document.createElement('td');
+                var textNode = document.createElement('text');
+                myTable.insertBefore(newTD, myTable.children[row].children[insertPosition]);
+                newTD.appendChild(textNode);
+
+
+        },
+
+        deleteColulmn: function (currentColumn) {
+            
+        },
+    
+        clearColumn: function () {
+            
+        },
+
+
 
 };
 
