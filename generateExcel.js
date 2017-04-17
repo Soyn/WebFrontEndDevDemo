@@ -142,8 +142,8 @@ var Util = {
                 document.getElementById('insert').addEventListener('click', Util.insertRowCallback, false);
                 document.getElementById('delete').addEventListener('click', Util.deleteRowCallback, false);
                 document.getElementById('clear').addEventListener('click', Util.clearRowCallback, false);
-            } else {
-                var currentColumn = td.index;
+            } else if(triggerElementClassName == 'columnHeader'){
+                var currentColumn = td.cellIndex;
 
                 Util.insertColumnCallback = function () {
                     Util.insertColumn(currentColumn);
@@ -158,7 +158,9 @@ var Util = {
                 Util.clearColumnCallback = function () {
                     Util.clearColumn();
                     Util.hideMenu();
-                }
+                };
+
+                document.getElementById('insert').addEventListener('click', Util.insertColumnCallback, false);
             }
         },
 
@@ -176,6 +178,8 @@ var Util = {
             document.getElementById('insert').removeEventListener('click', Util.insertRowCallback, false);
             document.getElementById('clear').removeEventListener('click', Util.clearRowCallback, false);
             document.getElementById('delete').removeEventListener('click', Util.deleteRowCallback, false);
+
+            document.getElementById('insert').removeEventListener('click', Util.insertColumnCallback, false);
         },
 
         insertRow: function (currentRow) {
@@ -229,12 +233,24 @@ var Util = {
         insertColumn: function (currentColumn) {
             var myTable = document.getElementById('myTable');
             var insertPosition = currentColumn + 1;
+
             for(var row = 0; row < myTable.childElementCount; ++row) {
                 var newTD = document.createElement('td');
+                newTD.setAttribute('class', 'cell');
                 var textNode = document.createElement('text');
-                myTable.insertBefore(newTD, myTable.children[row].children[insertPosition]);
+                var positionNode = myTable.children[row].children[insertPosition];
+                if(row == 0) {
+                    newTD.setAttribute('class', 'columnHeader');
+                    textNode.innerHTML = positionNode.innerHTML;
+                }
+                myTable.children[row].insertBefore(newTD, positionNode);
                 newTD.appendChild(textNode);
+            }
 
+            var rowHeader = myTable.children[0];
+            for(var i = insertPosition; i < rowHeader.childElementCount; ++i) {
+                rowHeader.children[i].innerText = String.fromCharCode(i + 64);
+            }
 
         },
 
