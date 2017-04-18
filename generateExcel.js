@@ -14,9 +14,12 @@ var Util = {
 
     generateTable: function () {
         var layoutDiv = document.getElementById('layout');
+
         if (layoutDiv) {
             var table = document.createElement('TABLE');
             table.setAttribute('id', 'myTable');
+            table.setAttribute('cellspacing', '0');
+            table.setAttribute('cellpadding', '0');
             layoutDiv.appendChild(table);
         }
 
@@ -39,21 +42,23 @@ var Util = {
         var rowCounts = tableRows.length;
 
         for (var i = 0; i < rowCounts; ++i) {
-            var alpha = 65;
+            var alpha = 65; // #A
             var currentRow = tableRows[i];
 
             for (var j = 0; j < Util.COLUMN_NUMBER + 1; ++j) {  // initialize the excel header
                 var currentTableData = document.createElement('TD');
-                currentTableData.setAttribute('class', 'cell');
-                var textNode = document.createElement('text');
+                var cellDiv = document.createElement('div');
 
+                currentTableData.appendChild(cellDiv);
+                currentTableData.setAttribute('class', 'cell');
+
+                var textNode = document.createElement('text');
+                cellDiv.appendChild(textNode);
 
                 if (i == 0 && j > 0) {  // top left is blank
-
                     var lineDiv = document.createElement('div');
                     lineDiv.setAttribute('class', 'lineDiv');
-                    currentTableData.appendChild(lineDiv);
-
+                    cellDiv.appendChild(lineDiv);
                     textNode.innerHTML = String.fromCharCode(alpha);
                     currentTableData.setAttribute('class', 'columnHeader');
                     ++alpha;
@@ -67,7 +72,6 @@ var Util = {
                     }
                 }
 
-                currentTableData.appendChild(textNode);
                 currentRow.appendChild(currentTableData);
             }
         }
@@ -76,7 +80,7 @@ var Util = {
     createNativeMenuBody: function (rowNumber, menuOptions) {
 
         var divMenu = document.createElement('div');
-        divMenu.setAttribute('id', 'contextMenu');
+        divMenu.setAttribute('id', 'Menu');
         divMenu.setAttribute('class', 'menu');
 
         var menuBody = document.createElement('table');
@@ -105,25 +109,22 @@ var Util = {
     },
 
     showMenu: function (event) {
-        var td = event.target;
-        if (td.nodeName.toLowerCase() == 'text') {
-            td = td.parentNode;
-        }
+        var divCell = event.target;
+        var td = divCell.parentNode;
 
         var triggerElementClassName = td.className;
+
         if (triggerElementClassName == 'rowHeader' || triggerElementClassName == 'columnHeader') {
             var posX = event.clientX + window.pageXOffset + 'px';
             var posY = event.clientY + window.pageYOffset + 'px';
-            var menuLayout = document.getElementById('contextMenu');
+            var menuLayout = document.getElementById('Menu');
 
             menuLayout.style.display = 'block';
             menuLayout.style.position = 'absolute';
             menuLayout.style.left = posX;
             menuLayout.style.top = posY;
         } else {
-            if (triggerElementClassName == 'cell') {
                 Util.hideMenu();
-            }
         }
 
         if (triggerElementClassName == 'rowHeader') {
@@ -179,7 +180,7 @@ var Util = {
 
 
     hideMenu: function () {
-        document.getElementById('contextMenu').style.display = 'none';
+        document.getElementById('Menu').style.display = 'none';
         document.getElementById('insert').removeEventListener('click', Util.insertRowCallback, false);
         document.getElementById('clear').removeEventListener('click', Util.clearRowCallback, false);
         document.getElementById('delete').removeEventListener('click', Util.deleteRowCallback, false);
@@ -194,6 +195,9 @@ var Util = {
 
         for (var i = 0; i < Util.COLUMN_NUMBER + 1; ++i) {
             var td = document.createElement('td');
+            var cellDiv = document.createElement('div');
+            td.appendChild(cellDiv);
+
             var textNode = document.createElement('text');
 
             td.setAttribute('class', 'cell');
@@ -205,7 +209,7 @@ var Util = {
                 textNode.setAttribute('contentEditable', true);
             }
 
-            td.appendChild(textNode);
+            cellDiv.appendChild(textNode);
             newRow.appendChild(td);
 
         }
@@ -214,7 +218,7 @@ var Util = {
         myTable.insertBefore(newRow, myTable.children[insertedPosition]);
         // update the row number
         for (var row = insertedPosition; row < myTable.childElementCount; ++row) {
-            myTable.children[row].firstElementChild.innerText = row;
+            myTable.children[row].children[0].firstElementChild.innerText = row;
         }
     },
 
@@ -247,6 +251,7 @@ var Util = {
             if (row == 0) {
                 newTD.setAttribute('class', 'columnHeader');
                 textNode.innerHTML = positionNode.innerHTML;
+                myTable.style.width = myTable.clientWidth + 53 + 'px';
             }
             myTable.children[row].insertBefore(newTD, positionNode);
             newTD.appendChild(textNode);
@@ -274,28 +279,58 @@ var Util = {
 
         var currentDiv = mouseDownEvent.target;
         var currentTD = currentDiv.parentNode;
-        var offsetX = currentTD.offsetLeft;
+        var TDOffsetX = currentTD.offsetLeft;
+        var tableNode = currentTD.parentNode.parentNode;
+        var lineDivHeight = tableNode.clientHeight;
+        currentDiv.classList.add('selected');
 
+        // mouse move event handler
         Util.mouseMoveCallback = function (mouseMoveEvent) {
             mouseMoveEvent.preventDefault();
-            currentDiv.left = mouseMoveEvent.clientX - offsetX + 'px';
-            currentDiv.right = 'inherit'
+
+            Util.changeThePseudoElementRule(lineDivHeight);
+
+            currentDiv.style.left = mouseMoveEvent.clientX - TDOffsetX + 'px';
+            currentDiv.style.right = 'inherit'
         };
 
+        // mouseup event handler
         Util.mouseUpCallback = function (mouseUpEvent) {
+
             document.removeEventListener('mousemove', Util.mouseMoveCallback, false);
-            var newWidth = mouseUpEvent.clientX - offsetX;
+            var originalTDWidth = currentTD.clientWidth;
+
+            var newWidth = mouseUpEvent.clientX - TDOffsetX;
+            var tableWidth = tableNode.clientWidth;
+
+            if(newWidth >= originalTDWidth) {
+                tableWidth += newWidth - originalTDWidth;
+            } else {
+                tableWidth -= originalTDWidth - newWidth;
+            }
+
             currentTD.style.width = newWidth + 'px';
 
-            currentDiv.style.right = '-2px';
+            currentDiv.style.right = '-8px';
             currentDiv.style.left = 'inherit';
-
-            console.log('TD-inde: ' + currentTD.cellIndex + ' ClientX: ' + mouseUpEvent.clientX + '  ' + 'OffsetX: ' + offsetX);
             document.removeEventListener('mouseup', Util.mouseUpCallback, false);
+            tableNode.style.width = tableWidth + 'px';
+
+            currentDiv.setAttribute('class', 'lineDiv');
         };
 
-        document.addEventListener('mouseover', Util.mouseMoveCallback, false);
+        document.addEventListener('mousemove', Util.mouseMoveCallback, false);
         document.addEventListener('mouseup', Util.mouseUpCallback, false);
+
+    },
+    
+
+
+    changeThePseudoElementRule: function (afterHeight) {
+        var style = document.createElement('style');
+        document.head.appendChild(style);
+        var sheet = style.sheet;
+        sheet.addRule('div.selected:after', 'height: ' + afterHeight + 'px; background-color: red; width: 10px');
     },
 
 
@@ -303,10 +338,14 @@ var Util = {
 
 function test() {
     var myTable = document.getElementById('layout');
-    myTable.addEventListener('click', Util.showMenu);
+    myTable.addEventListener('contextmenu', Util.showMenu);
 }
 Util.generateTable();
 Util.makeDivMenu();
 Util.hideMenu();
 test();
-document.addEventListener('mousedown', Util.moveOnColumn, false);
+
+var lineDivNodes = document.getElementsByClassName('lineDiv');
+for(var i = 0; i < lineDivNodes.length; ++i) {
+    lineDivNodes[i].addEventListener('mousedown', Util.moveOnColumn, false);
+}

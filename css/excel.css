@@ -1,46 +1,40 @@
 #layout {
-    width: 1300px;
-    height: 800px;
     background-color: white;
-    margin: 10px auto 10px auto;
-    overflow: scroll;
-}
-
-td {
-    width: 53px;
-    height: 20px;
-    position: relative;
-    margin: 0px;
-    border: 0.1em solid #d9d9d9;
-    padding: 1px;
-    text-align: center;
-}
-
-td.cell {
-    width: 53px;
-    height: 20px;
-    background-color: white;
-}
-
-td.columnHeader {
-    background-color: #e6e6e6;
-}
-
-td.rowHeader {
-    background-color: #e6e6e6;
-}
-td.columnHeader:hover{
-    background-color: #94bba4;
-}
-td.rowHeader:hover {
-    background-color: #94bba4;
+    overflow: auto;
 }
 
 table {
     border-collapse: collapse;
     background-color: white;
-    margin: 10px auto 10px auto;
+    overflow: auto;
 }
+
+td>div{
+    width: 53px;
+    height: 20px;
+    margin: 0px;
+    position: relative;
+    border-right: 1px solid #d9d9d9;
+    border-bottom: 1px solid #d9d9d9;
+    padding: 0px;
+    text-align: center;
+}
+
+td.cell {
+    background-color: white;
+}
+
+
+td.columnHeader, td.rowHeader {
+    background-color: #e6e6e6;
+    user-select: none;
+}
+
+td.columnHeader:hover, td.rowHeader:hover{
+    background-color: #94bba4;
+}
+
+
 
 
 div.menu > table {
@@ -51,6 +45,7 @@ div.menu > table {
     font-family: Arial;
     font-size: 4px;
     position: absolute;
+    z-index: 1;
 }
 tr > button {
     width: 50px;
@@ -64,13 +59,14 @@ tr.rowHeader:hover {
 }
 
 div.lineDiv {
-    width: 5px;
+    width: 15px;
     height: 20px;
     float: right;
     position: absolute;
-    right: -2px;
+    right: -8px;
     top: 0px;
     display: inline;
+    z-index: 1;
 }
 
 div.lineDiv:after {
@@ -79,7 +75,6 @@ div.lineDiv:after {
     width: 0px;
     height: 20px;
     position: absolute;
-    right: 3px;
     border-left: 1px solid #94bba4;
 }
 
