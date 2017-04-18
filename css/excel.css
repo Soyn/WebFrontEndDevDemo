@@ -6,6 +6,16 @@
     overflow: scroll;
 }
 
+td {
+    width: 53px;
+    height: 20px;
+    position: relative;
+    margin: 0px;
+    border: 0.1em solid #d9d9d9;
+    padding: 1px;
+    text-align: center;
+}
+
 td.cell {
     width: 53px;
     height: 20px;
@@ -20,26 +30,18 @@ td.rowHeader {
     background-color: #e6e6e6;
 }
 td.columnHeader:hover{
-    background-color: #00b33c;
+    background-color: #94bba4;
 }
 td.rowHeader:hover {
-    background-color: #00b33c;
+    background-color: #94bba4;
 }
 
 table {
     border-collapse: collapse;
     background-color: white;
-    overflow:  hidden;
-    text-overflow: clip;
     margin: 10px auto 10px auto;
 }
 
-td {
-    margin: 0px;
-    border: 0.1em solid #d9d9d9;
-    padding: 1px;
-    text-align: center;
-}
 
 div.menu > table {
     margin: 0px;
@@ -59,4 +61,28 @@ tr > button {
 
 tr.rowHeader:hover {
     background-color: #d8d7d4;
+}
+
+div.lineDiv {
+    width: 5px;
+    height: 20px;
+    float: right;
+    position: absolute;
+    right: -2px;
+    top: 0px;
+    display: inline;
+}
+
+div.lineDiv:after {
+    content: '';
+    margin: 0px;
+    width: 0px;
+    height: 20px;
+    position: absolute;
+    right: 3px;
+    border-left: 1px solid #94bba4;
+}
+
+div.lineDiv:hover {
+    background-color: #5b5b69;
 }
