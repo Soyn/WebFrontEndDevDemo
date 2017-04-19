@@ -22,6 +22,7 @@ td>div{
 
 td.cell {
     background-color: white;
+    overflow: hidden;
 }
 
 
@@ -80,4 +81,10 @@ div.lineDiv:after {
 
 div.lineDiv:hover {
     background-color: #5b5b69;
+}
+
+div.selected {
+    border: 0px solid cornflowerblue;
+    position: absolute;
+    z-index: 1;
 }
