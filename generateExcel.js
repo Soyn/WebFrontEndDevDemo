@@ -226,15 +226,16 @@ var Util = {
         myTable.removeChild(myTable.children[currentRow]);
 
         for (var row = currentRow; row < myTable.childElementCount; ++row) {
-            myTable.children[row].firstElementChild.innerText = row;
+            myTable.children[row].firstChild.firstChild.firstChild.innerText = row;
         }
     },
 
     clearRow: function (currentRow) {
         var myTable = document.getElementById('myTable');
         var trNode = myTable.children[currentRow];
+
         for (var i = 1; i < trNode.childElementCount; ++i) {
-            trNode.children[i].firstElementChild.innerText = '';
+            trNode.children[i].firstChild.firstChild.innerText = '';
         }
     },
 
@@ -245,6 +246,8 @@ var Util = {
         for (var row = 0; row < myTable.childElementCount; ++row) {
             var newTD = document.createElement('td');
             newTD.setAttribute('class', 'cell');
+
+            var helperDiv = document.createElement('div');
             var textNode = document.createElement('text');
             var positionNode = myTable.children[row].children[insertPosition];
             if (row == 0) {
@@ -253,18 +256,28 @@ var Util = {
                 myTable.style.width = myTable.clientWidth + 53 + 'px';
             }
             myTable.children[row].insertBefore(newTD, positionNode);
-            newTD.appendChild(textNode);
+            newTD.appendChild(helperDiv);
+            helperDiv.appendChild(textNode);
         }
 
         var rowHeader = myTable.children[0];
         for (var i = insertPosition; i < rowHeader.childElementCount; ++i) {
-            rowHeader.children[i].innerText = String.fromCharCode(i + 64);
+            rowHeader.children[i].firstChild.firstChild.innerText = String.fromCharCode(i + 64);
         }
 
     },
 
     deleteColulmn: function (currentColumn) {
+        var mytable = document.getElementById('myTable');
 
+        for(var row = 0; row < mytable.length; ++row) {
+            var toBeDeletedNode = mytable.children[row].children[currentColumn];
+            trNode.removeChild(toBeDeletedNode);
+        }
+
+        /*for(var i = currentColumn; i < mytable.children[0].childElementCount; ++i) {
+            mytable.children[0].
+        }*/
     },
 
     clearColumn: function () {
@@ -278,9 +291,6 @@ var Util = {
 
         var currentLineDiv = mouseDownEvent.target;
         var divHelperInDiv = currentLineDiv.parentNode;
-
-        var TDOffsetX = divHelperInDiv.getBoundingClientRect().left;
-
         var mousePositionToLineDivBorder = mouseDownEvent.clientX - currentLineDiv.getBoundingClientRect().left;
 
         var tableNode = divHelperInDiv.parentNode.parentNode.parentNode;
@@ -306,7 +316,7 @@ var Util = {
             document.removeEventListener('mousemove', Util.mouseMoveCallback, false);
             var originalTDWidth = divHelperInDiv.clientWidth;
 
-            var newWidth = mouseMoveEvent.clientX - currentLineDiv.getBoundingClientRect().left - mousePositionToLineDivBorder + originalTDWidth;
+            var newWidth = mouseUpEvent.clientX - currentLineDiv.getBoundingClientRect().left - mousePositionToLineDivBorder + originalTDWidth;
 
             var tableWidth = tableNode.offsetWidth;
 
@@ -321,6 +331,7 @@ var Util = {
             currentLineDiv.style.left = 'inherit';
             document.removeEventListener('mouseup', Util.mouseUpCallback, false);
             tableNode.style.width = tableWidth + 'px';
+
             currentLineDiv.setAttribute('class', 'lineDiv');
 
             Util.updateCurrentColumnWidth(divHelperInDiv, newWidth);
@@ -427,7 +438,6 @@ function testForLineDiv() {
 
 
 function testForExcelMenu() {
-    init();
     Util.makeDivMenu();
     Util.hideMenu();
     var myTable = document.getElementById('layout');
@@ -437,11 +447,11 @@ function testForExcelMenu() {
 
 
 function testForInputDiv() {
-    init();
     Util.createInputDiv();
     var myTableLayout = document.getElementById('layout');
 
     myTableLayout.addEventListener('dblclick', Util.inputDiv, false);
 }
-
+testForExcelMenu();
+testForInputDiv();
 testForLineDiv();
