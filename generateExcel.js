@@ -54,17 +54,20 @@ var Util = {
 
                 var textNode = document.createElement('text');
                 cellDiv.appendChild(textNode);
+                var lineDiv = document.createElement('div');
 
                 if (i == 0 && j > 0) {  // top left is blank
-                    var lineDiv = document.createElement('div');
                     lineDiv.setAttribute('class', 'lineDiv');
                     cellDiv.appendChild(lineDiv);
                     textNode.innerHTML = String.fromCharCode(alpha);
+
                     currentTableData.setAttribute('class', 'columnHeader');
                     ++alpha;
 
                 } else {
                     if (j == 0 && i) {
+                        lineDiv.setAttribute('class', 'horizontalDiv');
+                        cellDiv.appendChild(lineDiv);
                         currentTableData.setAttribute('class', 'rowHeader');
                         textNode.innerHTML = i;
                     }
@@ -155,16 +158,18 @@ var Util = {
             };
 
             Util.deleteColumnCallback = function () {
-                Util.deleteColulmn();
+                Util.deleteColumn(currentColumn);
                 Util.hideMenu();
             };
 
             Util.clearColumnCallback = function () {
-                Util.clearColumn();
+                Util.clearColumn(currentColumn);
                 Util.hideMenu();
             };
 
             document.getElementById('insert').addEventListener('click', Util.insertColumnCallback, false);
+            document.getElementById('delete').addEventListener('click', Util.deleteColumnCallback, false);
+            document.getElementById('clear').addEventListener('click', Util.clearColumnCallback, false);
         }
     },
 
@@ -179,11 +184,14 @@ var Util = {
 
     hideMenu: function () {
         document.getElementById('Menu').style.display = 'none';
+
         document.getElementById('insert').removeEventListener('click', Util.insertRowCallback, false);
         document.getElementById('clear').removeEventListener('click', Util.clearRowCallback, false);
         document.getElementById('delete').removeEventListener('click', Util.deleteRowCallback, false);
 
         document.getElementById('insert').removeEventListener('click', Util.insertColumnCallback, false);
+        document.getElementById('delete').removeEventListener('click', Util.deleteColumnCallback, false);
+        document.getElementById('clear').removeEventListener('click', Util.clearColumn, false);
     },
 
     insertRow: function (currentRow) {
@@ -191,7 +199,7 @@ var Util = {
         var insertedPosition = currentRow + 1;
         var newRow = document.createElement('tr');
 
-        for (var i = 0; i < Util.COLUMN_NUMBER + 1; ++i) {
+        for (var i = 0; i < myTable.childElementCount; ++i) {
             var td = document.createElement('td');
             var cellDiv = document.createElement('div');
             td.appendChild(cellDiv);
@@ -249,10 +257,12 @@ var Util = {
 
             var helperDiv = document.createElement('div');
             var textNode = document.createElement('text');
+
             var positionNode = myTable.children[row].children[insertPosition];
+
             if (row == 0) {
                 newTD.setAttribute('class', 'columnHeader');
-                textNode.innerHTML = positionNode.innerHTML;
+                textNode.innerHTML = positionNode.firstChild.firstChild.innerHTML;
                 myTable.style.width = myTable.clientWidth + 53 + 'px';
             }
             myTable.children[row].insertBefore(newTD, positionNode);
@@ -267,21 +277,29 @@ var Util = {
 
     },
 
-    deleteColulmn: function (currentColumn) {
+    deleteColumn: function (currentColumn) {
         var mytable = document.getElementById('myTable');
 
-        for(var row = 0; row < mytable.length; ++row) {
-            var toBeDeletedNode = mytable.children[row].children[currentColumn];
+        for(var row = 0; row < mytable.childElementCount; ++row) {
+            var trNode = mytable.children[row];
+            var toBeDeletedNode = trNode.children[currentColumn];
             trNode.removeChild(toBeDeletedNode);
         }
 
-        /*for(var i = currentColumn; i < mytable.children[0].childElementCount; ++i) {
-            mytable.children[0].
-        }*/
+        // update column index
+        for(var i = currentColumn; i < mytable.children[0].childElementCount; ++i) {
+            var currentColumnNode = mytable.children[0].children[i].firstElementChild.firstChild;
+            currentColumnNode.innerText = String.fromCharCode(i + 64);
+        }
     },
 
-    clearColumn: function () {
+    clearColumn: function (currentColumn) {
+        var myTable = document.getElementById('myTable');
+        for(var row = 0; row <myTable.childElementCount; ++row) {
+            var trNode = myTable.children[row];
+            trNode.children[currentColumn].firstChild.firstChild.innerText = '';
 
+        }
     },
 
     mouseMoveCallback: null,
@@ -316,8 +334,7 @@ var Util = {
             document.removeEventListener('mousemove', Util.mouseMoveCallback, false);
             var originalTDWidth = divHelperInDiv.clientWidth;
 
-            var newWidth = mouseUpEvent.clientX - currentLineDiv.getBoundingClientRect().left - mousePositionToLineDivBorder + originalTDWidth;
-
+            var newWidth = currentLineDiv.offsetLeft  + (currentLineDiv.clientWidth - 1) / 2;
             var tableWidth = tableNode.offsetWidth;
 
             if (newWidth >= originalTDWidth) {
@@ -341,6 +358,28 @@ var Util = {
         document.addEventListener('mouseup', Util.mouseUpCallback, false);
 
     },
+
+    moveOnRow: function (mouseDownEvent) {
+        var currentLineDiv = mouseDownEvent.target;
+        var divHelperInDiv = currentLineDiv.parentNode;
+        var mousePositionToLineDivBorder = mouseDownEvent.clientY - currentLineDiv.getBoundingClientRect().top;
+
+        var tableNode = divHelperInDiv.parentNode.parentNode.parentNode;
+
+        var lineDivWidth = tableNode.clientWidth;
+
+        currentLineDiv.classList.add('selected');
+
+        Util.mouseMoveCallback = function (mouseMoveEvent) {
+            mouseMoveEvent.preventDefault();
+            var offset = mouseMoveEvent.clientY - currentLineDiv.getBoundingClientRect().top - mousePositionToLineDivBorder;
+            currentLineDiv.style.top = currentLineDiv.offsetTop + offset + 'px';
+            currentLineDiv.style.
+        }
+    },
+
+    mouseMoveCallback: null,
+    mouseUpCallback: null,
 
     //update current column's width
     updateCurrentColumnWidth: function (divHelperInDiv, newWidth) {
@@ -431,6 +470,7 @@ function init() {
 function testForLineDiv() {
     init();
     var lineDivNodes = document.getElementsByClassName('lineDiv');
+    var hor
     for(var i = 0; i < lineDivNodes.length; ++i) {
         lineDivNodes[i].addEventListener('mousedown', Util.moveOnColumn, false);
     }
@@ -439,9 +479,9 @@ function testForLineDiv() {
 
 function testForExcelMenu() {
     Util.makeDivMenu();
-    Util.hideMenu();
+    //Util.hideMenu();
     var myTable = document.getElementById('layout');
-    myTable.addEventListener('contextmenu', Util.showMenu, false);
+    myTable.addEventListener('click', Util.showMenu, false);
     document.addEventListener('dblclick', Util.hideMenu, false);
 }
 
@@ -452,6 +492,7 @@ function testForInputDiv() {
 
     myTableLayout.addEventListener('dblclick', Util.inputDiv, false);
 }
+
 testForExcelMenu();
 testForInputDiv();
 testForLineDiv();

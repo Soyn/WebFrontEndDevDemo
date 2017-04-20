@@ -62,8 +62,9 @@ tr.rowHeader:hover {
 div.lineDiv {
     width: 15px;
     height: 20px;
-    float: right;
     position: absolute;
+    float: right;
+
     right: -8px;
     top: 0px;
     display: inline;
@@ -87,4 +88,32 @@ div.selected {
     border: 0px solid cornflowerblue;
     position: absolute;
     z-index: 1;
+}
+
+div.horizontalDiv {
+    width: inherit;
+    height: 15px;
+    position: absolute;
+    float: left;
+    left: 1px;
+    display: inline;
+    bottom: -8px;
+    z-index: 1;
+}
+
+div.horizontalDiv:after{
+    content: '';
+    margin: 0px;
+    width: inherit;
+    height: 0px;
+
+    position: absolute;
+    bottom: 8px;
+    right: 1px;
+    border-top: 1px solid #94bba4;
+
+}
+
+div.horizontalDiv:hover {
+    background-color: #5b5b69;
 }
