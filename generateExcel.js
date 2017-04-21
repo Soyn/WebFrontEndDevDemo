@@ -205,17 +205,21 @@ var Util = {
             td.appendChild(cellDiv);
 
             var textNode = document.createElement('text');
+            cellDiv.appendChild(textNode);
 
             td.setAttribute('class', 'cell');
 
             if (i == 0) {
+                var horizontalDiv = document.createElement('div');
+                horizontalDiv.setAttribute('class', 'horizontalDiv');
+                cellDiv.appendChild(horizontalDiv);
                 td.setAttribute('class', 'rowHeader');
                 textNode.innerText = insertedPosition;
             } else {
                 textNode.setAttribute('contentEditable', true);
             }
 
-            cellDiv.appendChild(textNode);
+
             newRow.appendChild(td);
 
         }
@@ -261,13 +265,17 @@ var Util = {
             var positionNode = myTable.children[row].children[insertPosition];
 
             if (row == 0) {
+                var lineDiv = document.createElement('div');
+                lineDiv.setAttribute('class', 'lineDiv');
+                helperDiv.appendChild(textNode);
                 newTD.setAttribute('class', 'columnHeader');
                 textNode.innerHTML = positionNode.firstChild.firstChild.innerHTML;
                 myTable.style.width = myTable.clientWidth + 53 + 'px';
             }
+
+            helperDiv.appendChild(lineDiv);
             myTable.children[row].insertBefore(newTD, positionNode);
             newTD.appendChild(helperDiv);
-            helperDiv.appendChild(textNode);
         }
 
         var rowHeader = myTable.children[0];
@@ -295,7 +303,7 @@ var Util = {
 
     clearColumn: function (currentColumn) {
         var myTable = document.getElementById('myTable');
-        for(var row = 0; row <myTable.childElementCount; ++row) {
+        for(var row = 1; row <myTable.childElementCount; ++row) {
             var trNode = myTable.children[row];
             trNode.children[currentColumn].firstChild.firstChild.innerText = '';
 
@@ -354,12 +362,6 @@ var Util = {
                 var newWidth = currentLineDiv.offsetLeft  + (currentLineDiv.clientWidth - 1) / 2;
                 var tableWidth = tableNode.offsetWidth;
 
-                /*if (newWidth >= originalTDWidth) {
-                    tableWidth += newWidth - originalTDWidth;
-                } else {
-                    tableWidth -= originalTDWidth - newWidth;
-                }*/
-
                 tableWidth += newWidth - originalTDWidth;
                 divHelperInDiv.style.width = newWidth + 'px';
                 currentLineDiv.style.right = '-8px';
@@ -369,12 +371,6 @@ var Util = {
                 var originalTDHeight = divHelperInDiv.clientHeight;
                 var newHeight = currentLineDiv.offsetTop + (currentLineDiv.clientHeight - 1) / 2;
                 var tableHeight = tableNode.offsetHeight;
-                /*if(newHeight >= originalTDHeight) {
-                    tableWidth += newHeight - originalTDHeight;
-                } else {
-                    tableHeight -= originalTDHeight - newHeight;
-                }*/
-
                 tableHeight += newHeight - originalTDHeight;
                 divHelperInDiv.style.height = newHeight + 'px';
                 currentLineDiv.style.left = '1px';
@@ -484,7 +480,8 @@ var Util = {
             divForInput.addEventListener('focus', Util.getContentFromTextNode, false);
             divForInput.addEventListener('blur', Util.extractDivContentsToText, false);
             divForInput.addEventListener('keypress', Util.completeInput, false);
-        }},
+        }
+        },
 
     createInputDiv: function () {
         var divForInput = document.createElement('div');
@@ -519,9 +516,9 @@ function testForLineDiv() {
 
 function testForExcelMenu() {
     Util.makeDivMenu();
-    //Util.hideMenu();
+    Util.hideMenu();
     var myTable = document.getElementById('layout');
-    myTable.addEventListener('click', Util.showMenu, false);
+    myTable.addEventListener('contextmenu', Util.showMenu, false);
     document.addEventListener('dblclick', Util.hideMenu, false);
 }
 
