@@ -309,49 +309,90 @@ var Util = {
 
         var currentLineDiv = mouseDownEvent.target;
         var divHelperInDiv = currentLineDiv.parentNode;
-        var mousePositionToLineDivBorder = mouseDownEvent.clientX - currentLineDiv.getBoundingClientRect().left;
-
+        var isColumnMove = true;
         var tableNode = divHelperInDiv.parentNode.parentNode.parentNode;
+        var mousePositionToLineDivBorder = mouseDownEvent.clientX - currentLineDiv.getBoundingClientRect().left;
+        var lineStyle = tableNode.clientHeight;
 
-        var lineDivHeight = tableNode.clientHeight;
+        if(currentLineDiv.className == 'horizontalDiv'){
+            isColumnMove = false;
+            mousePositionToLineDivBorder = mouseDownEvent.clientY - currentLineDiv.getBoundingClientRect().top;
+            lineStyle = tableNode.clientWidth;
+        }
 
         currentLineDiv.classList.add('selected');
 
         // mouse move event handler
         Util.mouseMoveCallback = function (mouseMoveEvent) {
             mouseMoveEvent.preventDefault();
+            Util.changeThePseudoElementRule(lineStyle, isColumnMove);
 
-            Util.changeThePseudoElementRule(lineDivHeight);
+            var offset = mouseMoveEvent.clientX - currentLineDiv.getBoundingClientRect().left
+                - mousePositionToLineDivBorder;
 
-            var offset = mouseMoveEvent.clientX - currentLineDiv.getBoundingClientRect().left - mousePositionToLineDivBorder;
-            currentLineDiv.style.left = currentLineDiv.offsetLeft + offset + 'px';
-            currentLineDiv.style.right = 'inherit'
+            if(isColumnMove) {
+                currentLineDiv.style.left = currentLineDiv.offsetLeft + offset + 'px';
+                currentLineDiv.style.right = 'inherit'
+
+            }
+            else {
+                offset = mouseMoveEvent.clientY - currentLineDiv.getBoundingClientRect().top
+                    - mousePositionToLineDivBorder;
+                currentLineDiv.style.top = currentLineDiv.offsetTop + offset + 'px';
+                currentLineDiv.style.left = '1px';
+            }
+
         };
 
         // mouseup event handler
         Util.mouseUpCallback = function (mouseUpEvent) {
 
             document.removeEventListener('mousemove', Util.mouseMoveCallback, false);
-            var originalTDWidth = divHelperInDiv.clientWidth;
 
-            var newWidth = currentLineDiv.offsetLeft  + (currentLineDiv.clientWidth - 1) / 2;
-            var tableWidth = tableNode.offsetWidth;
+            if(isColumnMove) {
+                var originalTDWidth = divHelperInDiv.clientWidth;
+                var newWidth = currentLineDiv.offsetLeft  + (currentLineDiv.clientWidth - 1) / 2;
+                var tableWidth = tableNode.offsetWidth;
 
-            if (newWidth >= originalTDWidth) {
+                /*if (newWidth >= originalTDWidth) {
+                    tableWidth += newWidth - originalTDWidth;
+                } else {
+                    tableWidth -= originalTDWidth - newWidth;
+                }*/
+
                 tableWidth += newWidth - originalTDWidth;
+                divHelperInDiv.style.width = newWidth + 'px';
+                currentLineDiv.style.right = '-8px';
+                currentLineDiv.style.left = 'inherit';
+                tableNode.style.width = tableWidth + 'px';
             } else {
-                tableWidth -= originalTDWidth - newWidth;
+                var originalTDHeight = divHelperInDiv.clientHeight;
+                var newHeight = currentLineDiv.offsetTop + (currentLineDiv.clientHeight - 1) / 2;
+                var tableHeight = tableNode.offsetHeight;
+                /*if(newHeight >= originalTDHeight) {
+                    tableWidth += newHeight - originalTDHeight;
+                } else {
+                    tableHeight -= originalTDHeight - newHeight;
+                }*/
+
+                tableHeight += newHeight - originalTDHeight;
+                divHelperInDiv.style.height = newHeight + 'px';
+                currentLineDiv.style.left = '1px';
+                currentLineDiv.style.bottom = '8px';
+                tableNode.style.height = tableHeight + 'px';
             }
 
-            divHelperInDiv.style.width = newWidth + 'px';
-            currentLineDiv.style.right = '-8px';
-            currentLineDiv.style.left = 'inherit';
+
             document.removeEventListener('mouseup', Util.mouseUpCallback, false);
-            tableNode.style.width = tableWidth + 'px';
 
-            currentLineDiv.setAttribute('class', 'lineDiv');
+            if(isColumnMove) {
+                currentLineDiv.setAttribute('class', 'lineDiv');
+                Util.updateCurrentColumnWidth(divHelperInDiv, newWidth);
 
-            Util.updateCurrentColumnWidth(divHelperInDiv, newWidth);
+            } else {
+                currentLineDiv.setAttribute('class', 'horizontalDiv');
+                Util.updateCurrentRowHeight(divHelperInDiv, newHeight);
+            }
 
         };
         document.addEventListener('mousemove', Util.mouseMoveCallback, false);
@@ -359,27 +400,7 @@ var Util = {
 
     },
 
-    moveOnRow: function (mouseDownEvent) {
-        var currentLineDiv = mouseDownEvent.target;
-        var divHelperInDiv = currentLineDiv.parentNode;
-        var mousePositionToLineDivBorder = mouseDownEvent.clientY - currentLineDiv.getBoundingClientRect().top;
 
-        var tableNode = divHelperInDiv.parentNode.parentNode.parentNode;
-
-        var lineDivWidth = tableNode.clientWidth;
-
-        currentLineDiv.classList.add('selected');
-
-        Util.mouseMoveCallback = function (mouseMoveEvent) {
-            mouseMoveEvent.preventDefault();
-            var offset = mouseMoveEvent.clientY - currentLineDiv.getBoundingClientRect().top - mousePositionToLineDivBorder;
-            currentLineDiv.style.top = currentLineDiv.offsetTop + offset + 'px';
-            currentLineDiv.style.
-        }
-    },
-
-    mouseMoveCallback: null,
-    mouseUpCallback: null,
 
     //update current column's width
     updateCurrentColumnWidth: function (divHelperInDiv, newWidth) {
@@ -391,15 +412,30 @@ var Util = {
         for(var row = 1; row < length; ++row) {
             var currentRow = currentTable.children[row];
             currentRow.children[col].firstElementChild.style.width = newWidth + 'px';
-
         }
     },
 
-    changeThePseudoElementRule: function (afterHeight) {
+    updateCurrentRowHeight: function (divHelperDiv, newHeight) {
+        var currentTable = document.getElementById('myTable');
+        var length = currentTable.children[0].childElementCount;
+        var currentRowIndex = divHelperDiv.parentNode.parentNode.rowIndex;
+
+        for(var col = 1; col < length; ++col) {
+            var currentTD = currentTable.children[currentRowIndex].children[col];
+            currentTD.firstElementChild.style.height = newHeight + 'px';
+        }
+    },
+
+    changeThePseudoElementRule: function (lineStyle, isColumnMove) {
         var style = document.createElement('style');
         document.head.appendChild(style);
         var sheet = style.sheet;
-        sheet.addRule('div.selected:after', 'height: ' + afterHeight + 'px; background-color: red;');
+
+        if(isColumnMove){
+            sheet.addRule('div.selected:after', 'height: ' + lineStyle + 'px;');
+        } else {
+            sheet.addRule('div.selected:after', 'width: ' + lineStyle + 'px;');
+        }
     },
 
     inputDiv: function (event) {
@@ -470,9 +506,13 @@ function init() {
 function testForLineDiv() {
     init();
     var lineDivNodes = document.getElementsByClassName('lineDiv');
-    var hor
+    var horizontalDivNodes = document.getElementsByClassName('horizontalDiv');
     for(var i = 0; i < lineDivNodes.length; ++i) {
         lineDivNodes[i].addEventListener('mousedown', Util.moveOnColumn, false);
+    }
+
+    for(var i = 0; i < horizontalDivNodes.length; ++i) {
+        horizontalDivNodes[i].addEventListener('mousedown', Util.moveOnColumn, false);
     }
 }
 

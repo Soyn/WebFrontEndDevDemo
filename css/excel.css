@@ -20,6 +20,9 @@ td>div{
     text-align: center;
 }
 
+text {
+    text-align: center;
+}
 td.cell {
     background-color: white;
     overflow: hidden;
@@ -91,20 +94,19 @@ div.selected {
 }
 
 div.horizontalDiv {
-    width: inherit;
+    width: 53px;
     height: 15px;
     position: absolute;
     float: left;
     left: 1px;
     display: inline;
     bottom: -8px;
-    z-index: 1;
 }
 
 div.horizontalDiv:after{
     content: '';
     margin: 0px;
-    width: inherit;
+    width: 53px;
     height: 0px;
 
     position: absolute;
