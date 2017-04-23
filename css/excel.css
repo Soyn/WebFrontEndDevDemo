@@ -32,6 +32,7 @@ td.cell {
 td.columnHeader, td.rowHeader {
     background-color: #e6e6e6;
     user-select: none;
+    text-align: center;
 }
 
 td.columnHeader:hover, td.rowHeader:hover{
@@ -93,6 +94,7 @@ div.selected {
     z-index: 1;
 }
 
+
 div.horizontalDiv {
     width: 53px;
     height: 15px;
@@ -118,4 +120,15 @@ div.horizontalDiv:after{
 
 div.horizontalDiv:hover {
     background-color: #5b5b69;
+}
+
+
+
+button {
+    width:50px;
+    border: 1px solid;
+    padding: 0px;
+    margin: 1px;
+    display: block;
+    background-color: white;
 }

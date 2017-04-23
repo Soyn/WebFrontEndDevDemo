@@ -40,25 +40,27 @@ var Util = {
     generateTableData: function () {
         var tableRows = document.getElementsByTagName('tr');
         var rowCounts = tableRows.length;
+        console.log('rowCounts: ' + rowCounts);
 
         for (var i = 0; i < rowCounts; ++i) {
             var alpha = 65; // #A
             var currentRow = tableRows[i];
-
+            console.log('currentRow\'stype ' + currentRow.type);
             for (var j = 0; j < Util.COLUMN_NUMBER + 1; ++j) {  // initialize the excel header
                 var currentTableData = document.createElement('TD');
-                var cellDiv = document.createElement('div');
+                var helperDiv = document.createElement('div');
 
-                currentTableData.appendChild(cellDiv);
+                currentTableData.appendChild(helperDiv);
                 currentTableData.setAttribute('class', 'cell');
 
                 var textNode = document.createElement('text');
-                cellDiv.appendChild(textNode);
-                var lineDiv = document.createElement('div');
+                helperDiv.appendChild(textNode);
+
 
                 if (i == 0 && j > 0) {  // top left is blank
+                    var lineDiv = document.createElement('div');
                     lineDiv.setAttribute('class', 'lineDiv');
-                    cellDiv.appendChild(lineDiv);
+                    helperDiv.appendChild(lineDiv);
                     textNode.innerHTML = String.fromCharCode(alpha);
 
                     currentTableData.setAttribute('class', 'columnHeader');
@@ -66,8 +68,9 @@ var Util = {
 
                 } else {
                     if (j == 0 && i) {
+                        var lineDiv = document.createElement('div');
                         lineDiv.setAttribute('class', 'horizontalDiv');
-                        cellDiv.appendChild(lineDiv);
+                        helperDiv.appendChild(lineDiv);
                         currentTableData.setAttribute('class', 'rowHeader');
                         textNode.innerHTML = i;
                     }
@@ -78,34 +81,28 @@ var Util = {
         }
     },
 
-    createNativeMenuBody: function (rowNumber, menuOptions) {
+    createNativeMenuBody: function (menuOptions) {
 
-        var divMenu = document.createElement('div');
-        divMenu.setAttribute('id', 'Menu');
-        divMenu.setAttribute('class', 'menu');
+        var menuBody = document.createElement('div');
+        menuBody.setAttribute('id', 'Menu');
 
-        var menuBody = document.createElement('table');
         menuBody.setAttribute('border', '0');
         menuBody.setAttribute('cellpadding', '0');
         menuBody.setAttribute('cellspacing', '0');
 
-        for (var i = 0; i < rowNumber; ++i) {
-            var tr = document.createElement('tr');
-            var td = document.createElement('button');
+        for (var i = 0; i < menuOptions.length; ++i) {
+            var button = document.createElement('button');
 
-            td.innerText = menuOptions[i];
-            td.setAttribute('id', menuOptions[i]);
-            tr.appendChild(td);
-            menuBody.appendChild(tr);
+            button.innerText = menuOptions[i];
+            button.setAttribute('id', menuOptions[i]);
+            menuBody.appendChild(button);
         }
-
-        divMenu.appendChild(menuBody);
-        document.body.appendChild(divMenu);
+        document.body.appendChild(menuBody);
     },
 
     makeDivMenu: function () {
         var menuOptions = ['insert', 'delete', 'clear'];
-        Util.createNativeMenuBody(menuOptions.length, menuOptions);
+        Util.createNativeMenuBody(menuOptions);
 
     },
 
@@ -133,14 +130,13 @@ var Util = {
             Util.insertRowCallback = function () {
                 Util.insertRow(currentRow);
                 Util.hideMenu();
+
             };
 
             Util.deleteRowCallback = function () {
                 Util.deleteRow(currentRow);
                 Util.hideMenu();
-
-            };
-
+            }
             Util.clearRowCallback = function () {
                 Util.clearRow(currentRow);
                 Util.hideMenu();
@@ -191,28 +187,30 @@ var Util = {
 
         document.getElementById('insert').removeEventListener('click', Util.insertColumnCallback, false);
         document.getElementById('delete').removeEventListener('click', Util.deleteColumnCallback, false);
-        document.getElementById('clear').removeEventListener('click', Util.clearColumn, false);
+        document.getElementById('clear').removeEventListener('click', Util.clearColumnCallback, false);
     },
 
     insertRow: function (currentRow) {
         var myTable = document.getElementById('myTable');
         var insertedPosition = currentRow + 1;
+        console.log('currentRow: ' + currentRow + ' insertedPosition: ' + insertedPosition);
         var newRow = document.createElement('tr');
 
-        for (var i = 0; i < myTable.childElementCount; ++i) {
+        for (var i = 0; i < myTable.firstChild.childElementCount; ++i) {
+            console.log('td counts: ' + myTable.childElementCount);
             var td = document.createElement('td');
-            var cellDiv = document.createElement('div');
-            td.appendChild(cellDiv);
+            var helperDiv = document.createElement('div');
+            td.appendChild(helperDiv);
 
             var textNode = document.createElement('text');
-            cellDiv.appendChild(textNode);
+            helperDiv.appendChild(textNode);
 
             td.setAttribute('class', 'cell');
 
             if (i == 0) {
                 var horizontalDiv = document.createElement('div');
                 horizontalDiv.setAttribute('class', 'horizontalDiv');
-                cellDiv.appendChild(horizontalDiv);
+                helperDiv.appendChild(horizontalDiv);
                 td.setAttribute('class', 'rowHeader');
                 textNode.innerText = insertedPosition;
             } else {
@@ -236,7 +234,6 @@ var Util = {
     deleteRow: function (currentRow) {
         var myTable = document.getElementById('myTable');
         myTable.removeChild(myTable.children[currentRow]);
-
         for (var row = currentRow; row < myTable.childElementCount; ++row) {
             myTable.children[row].firstChild.firstChild.firstChild.innerText = row;
         }
@@ -287,10 +284,14 @@ var Util = {
 
     deleteColumn: function (currentColumn) {
         var mytable = document.getElementById('myTable');
-
+        var tableWidth = mytable.clientWidth;
         for(var row = 0; row < mytable.childElementCount; ++row) {
             var trNode = mytable.children[row];
             var toBeDeletedNode = trNode.children[currentColumn];
+            if(row == 0) {
+                tableWidth -= toBeDeletedNode.clientWidth;
+                mytable.style.width = tableWidth + 'px';
+            }
             trNode.removeChild(toBeDeletedNode);
         }
 
@@ -423,22 +424,28 @@ var Util = {
     },
 
     changeThePseudoElementRule: function (lineStyle, isColumnMove) {
-        var style = document.createElement('style');
+        if(!document.getElementsByTagName('style').length) {
+            var style = document.createElement('style');
+        } else {
+            var style = document.getElementsByTagName('style')[0];
+        }
         document.head.appendChild(style);
         var sheet = style.sheet;
 
-        if(isColumnMove){
+        if (isColumnMove) {
             sheet.addRule('div.selected:after', 'height: ' + lineStyle + 'px;');
         } else {
             sheet.addRule('div.selected:after', 'width: ' + lineStyle + 'px;');
         }
+
     },
 
     inputDiv: function (event) {
         var td = event.target.parentNode;
+        console.log('event.target.parentNode.className: ' + event.target.parentNode.className);
         var textNode = event.target.firstChild;
         var divForInput = document.getElementById('inputDiv');
-        divForInput.innerText = '';
+        //divForInput.innerText = '';
         if(td.className == 'cell'){
 
             function setDivPosition() {
@@ -454,28 +461,28 @@ var Util = {
             divForInput.position = 'absolute';
             setDivPosition();
 
-            Util.getContentFromTextNode = function (evt) {
-                if(textNode.textContent){
+            Util.getContentFromTextNode = function () {
                     divForInput.innerText = textNode.textContent;
                     divForInput.style.backgroundColor = td.style.backgroundColor;
                     textNode.textContent = '';
-                }
             };
             Util.extractDivContentsToText = function () {
-                textNode.textContent = inputDiv.innerText;
+                console.log('Div Content: ' + divForInput.innerText);
+                textNode.textContent = divForInput.innerText;
                 divForInput.style.display = 'none';
+                divForInput.innerText = '';
                 divForInput.removeEventListener('focus', Util.getContentFromTextNode, false);
                 divForInput.removeEventListener('blur', Util.extractDivContentsToText, false);
             };
 
             Util.completeInput = function (keyPressEvent) {
                 if(keyPressEvent.which == 13) {  // enter press event trigger
+                    console.log('key: ' + keyPressEvent.which);
                     Util.extractDivContentsToText();
                     divForInput.setAttribute('contenteditable', false);
-                    divForInput.removeEventListener('focus', Util.getContentFromTextNode, false);
-                    divForInput.removeEventListener('blur', Util.extractDivContentsToText, false);
-                }
-            };
+                    divForInput.removeEventListener('keypress', Util.completeInput, false);
+                };
+            }
 
             divForInput.addEventListener('focus', Util.getContentFromTextNode, false);
             divForInput.addEventListener('blur', Util.extractDivContentsToText, false);
@@ -501,7 +508,6 @@ function init() {
 }
 
 function testForLineDiv() {
-    init();
     var lineDivNodes = document.getElementsByClassName('lineDiv');
     var horizontalDivNodes = document.getElementsByClassName('horizontalDiv');
     for(var i = 0; i < lineDivNodes.length; ++i) {
@@ -530,6 +536,7 @@ function testForInputDiv() {
     myTableLayout.addEventListener('dblclick', Util.inputDiv, false);
 }
 
+init();
 testForExcelMenu();
 testForInputDiv();
 testForLineDiv();
