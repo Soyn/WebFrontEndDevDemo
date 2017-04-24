@@ -101,7 +101,7 @@ var Util = {
 
     showMenu: function (event) {
 
-        //event.preventDefault();
+        event.preventDefault();
 
         var divCell = event.target;
         var td = divCell.parentNode;
@@ -373,11 +373,14 @@ var Util = {
             } else {
                 var originalTDHeight = divHelperInDiv.clientHeight;
                 var newHeight = currentLineDiv.offsetTop + (currentLineDiv.clientHeight - 1) / 2;
-                var tableHeight = tableNode.offsetHeight;
+                var tableHeight = tableNode.offsetHeight
+
                 tableHeight += newHeight - originalTDHeight;
                 divHelperInDiv.style.height = newHeight + 'px';
                 currentLineDiv.style.left = '0px';
                 currentLineDiv.style.bottom = '7px';
+                divHelperInDiv.style.lineHeight = newHeight + 'px';
+                divHelperInDiv.style.textAlign = 'center';
                 tableNode.style.height = tableHeight + 'px';
             }
 
@@ -448,6 +451,7 @@ var Util = {
         }
 
     },
+    inputDivSetted: false,
 
     inputDiv: function (event) {
         var td = event.target.parentNode;
@@ -455,11 +459,19 @@ var Util = {
         var divForInput = document.getElementById('inputDiv');
         console.log('row: ' + td.parentNode.rowIndex + ' column: ' + td.cellIndex);
 
+        divForInput.removeEventListener('focus', Util.getContentFromTextNode, false);
+        divForInput.removeEventListener('blur', Util.extractDivContentsToText, false);
+        divForInput.removeEventListener('keypress', Util.completeInput, false);
+
         if(td.className == 'cell'){
 
             function setDivPosition() {
-                divForInput.style.left = td.getBoundingClientRect().left + 'px';
-                divForInput.style.top = td.getBoundingClientRect().top + 'px';
+                divForInput.style.left = td.getBoundingClientRect().left + window.pageXOffset+ 'px';
+                divForInput.style.top = td.getBoundingClientRect().top + window.pageYOffset + 'px';
+                console.log('scroll-left: ' + divForInput.scrollLeft + ' scroll-top: ' + divForInput.scrollTop);
+                console.log('left: ' + divForInput.style.left + ' top: ' + divForInput.style.top);
+                console.log('window.pageYOfset: ' + window.pageYOffset);
+                console.log('windows.pageXoffset: ' + window.pageXOffset);
             }
 
             divForInput.setAttribute('contenteditable', true);
@@ -471,21 +483,22 @@ var Util = {
             setDivPosition();
 
             Util.getContentFromTextNode = function () {
-                    divForInput.innerText = textNode.textContent;
-                    divForInput.style.backgroundColor = td.style.backgroundColor;
-                    textNode.textContent = '';
+                divForInput.innerText = textNode.textContent;
+                divForInput.style.backgroundColor = td.style.backgroundColor;
+                textNode.textContent = '';
             };
 
             Util.extractDivContentsToText = function () {
-                console.log('Output content to text node.....');
-                console.log('+row: ' + td.parentNode.rowIndex + ' column: ' + td.cellIndex);
-                console.log('Div Contents: ' + divForInput.innerText);
+                //console.log('Output content to text node.....');
+                console.log('+row: ' + td.parentNode.rowIndex + ' +column: ' + td.cellIndex);
+                //console.log('Div Contents: ' + divForInput.innerText);
                 textNode.textContent = divForInput.innerText;
                 divForInput.style.display = 'none';
                 divForInput.innerText = '';
                 divForInput.removeEventListener('focus', Util.getContentFromTextNode, false);
                 divForInput.removeEventListener('blur', Util.extractDivContentsToText, false);
-                //document.getElementById('layout').removeEventListener('scroll', Util.extractDivContentsToText, false);
+                document.getElementById('layout').removeEventListener('scroll', Util.extractDivContentsToText, false);
+                Util.inputDivSetted = false;
             };
 
             Util.completeInput = function (keyPressEvent) {
@@ -496,12 +509,13 @@ var Util = {
                 };
             }
 
-            divForInput.addEventListener('focus', Util.getContentFromTextNode, false);
-            divForInput.addEventListener('blur', Util.extractDivContentsToText, false);
-            divForInput.addEventListener('keypress', Util.completeInput, false);
-            //document.getElementById('layout').addEventListener('scroll', Util.extractDivContentsToText, false);
-        }
 
+                divForInput.addEventListener('focus', Util.getContentFromTextNode, false);
+                divForInput.addEventListener('blur', Util.extractDivContentsToText, false);
+                divForInput.addEventListener('keypress', Util.completeInput, false);
+                document.getElementById('layout').addEventListener('scroll', Util.extractDivContentsToText, false);
+
+        }
     },
 
     createInputDiv: function () {
@@ -549,7 +563,7 @@ function testForInputDiv() {
     Util.createInputDiv();
     var myTableLayout = document.getElementById('myTable');
 
-    myTableLayout.addEventListener('dblclick', Util.inputDiv, false);
+    myTableLayout.addEventListener('click', Util.inputDiv, false);
 }
 
 init();
