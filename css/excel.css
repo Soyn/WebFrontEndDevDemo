@@ -1,6 +1,6 @@
 #layout {
     background-color: white;
-    overflow: auto;
+    overflow: visible;
 }
 
 table {
@@ -17,11 +17,11 @@ td>div{
     border-right: 1px solid #d9d9d9;
     border-bottom: 1px solid #d9d9d9;
     padding: 0px;
-    text-align: center;
 }
 
 text {
-    text-align: center;
+    position: absolute;
+    bottom: -3px;
 }
 td.cell {
     background-color: white;
@@ -40,8 +40,6 @@ td.columnHeader:hover, td.rowHeader:hover{
 }
 
 
-
-
 div.menu > table {
     margin: 0px;
     border: thin solid #808080;
@@ -52,26 +50,35 @@ div.menu > table {
     position: absolute;
     z-index: 1;
 }
+
+div#Menu {
+    border: 0px;
+    position: absolute;
+}
 tr > button {
     width: 50px;
     height: 20px;
     text-align: center;
     background-color: white;
+    position: absolute;
 }
 
 tr.rowHeader:hover {
     background-color: #d8d7d4;
 }
 
+div.selected {
+    border: 0px solid cornflowerblue;
+    position: absolute;
+    z-index: 1;
+}
 div.lineDiv {
     width: 15px;
     height: 20px;
     position: absolute;
-    float: right;
 
-    right: -8px;
+    right: -7px;
     top: 0px;
-    display: inline;
     z-index: 1;
 }
 
@@ -88,7 +95,7 @@ div.lineDiv:hover {
     background-color: #5b5b69;
 }
 
-div.selected {
+div.lineDiv.selected {
     border: 0px solid cornflowerblue;
     position: absolute;
     z-index: 1;
@@ -99,9 +106,7 @@ div.horizontalDiv {
     width: 53px;
     height: 15px;
     position: absolute;
-    float: left;
-    left: 1px;
-    display: inline;
+    left: 0;
     bottom: -8px;
 }
 
@@ -112,8 +117,8 @@ div.horizontalDiv:after{
     height: 0px;
 
     position: absolute;
-    bottom: 8px;
-    right: 1px;
+    bottom: 7px;
+    left: 0px;
     border-top: 1px solid #94bba4;
 
 }
@@ -122,8 +127,11 @@ div.horizontalDiv:hover {
     background-color: #5b5b69;
 }
 
-
-
+div.horizontalDiv.selected {
+    border: 0px solid cornflowerblue;
+    position: absolute;
+    z-index: 1;
+}
 button {
     width:50px;
     border: 1px solid;

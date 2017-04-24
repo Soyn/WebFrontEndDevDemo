@@ -40,12 +40,10 @@ var Util = {
     generateTableData: function () {
         var tableRows = document.getElementsByTagName('tr');
         var rowCounts = tableRows.length;
-        console.log('rowCounts: ' + rowCounts);
 
         for (var i = 0; i < rowCounts; ++i) {
             var alpha = 65; // #A
             var currentRow = tableRows[i];
-            console.log('currentRow\'stype ' + currentRow.type);
             for (var j = 0; j < Util.COLUMN_NUMBER + 1; ++j) {  // initialize the excel header
                 var currentTableData = document.createElement('TD');
                 var helperDiv = document.createElement('div');
@@ -85,11 +83,6 @@ var Util = {
 
         var menuBody = document.createElement('div');
         menuBody.setAttribute('id', 'Menu');
-
-        menuBody.setAttribute('border', '0');
-        menuBody.setAttribute('cellpadding', '0');
-        menuBody.setAttribute('cellspacing', '0');
-
         for (var i = 0; i < menuOptions.length; ++i) {
             var button = document.createElement('button');
 
@@ -107,6 +100,9 @@ var Util = {
     },
 
     showMenu: function (event) {
+
+        //event.preventDefault();
+
         var divCell = event.target;
         var td = divCell.parentNode;
 
@@ -118,7 +114,6 @@ var Util = {
             var menuLayout = document.getElementById('Menu');
 
             menuLayout.style.display = 'block';
-            menuLayout.style.position = 'absolute';
             menuLayout.style.left = posX;
             menuLayout.style.top = posY;
         } else {
@@ -193,30 +188,27 @@ var Util = {
     insertRow: function (currentRow) {
         var myTable = document.getElementById('myTable');
         var insertedPosition = currentRow + 1;
-        console.log('currentRow: ' + currentRow + ' insertedPosition: ' + insertedPosition);
         var newRow = document.createElement('tr');
 
         for (var i = 0; i < myTable.firstChild.childElementCount; ++i) {
-            console.log('td counts: ' + myTable.childElementCount);
             var td = document.createElement('td');
             var helperDiv = document.createElement('div');
             td.appendChild(helperDiv);
-
             var textNode = document.createElement('text');
+            helperDiv.style.width = myTable.children[currentRow].children[i].firstChild.clientWidth + 'px';
             helperDiv.appendChild(textNode);
-
             td.setAttribute('class', 'cell');
 
             if (i == 0) {
                 var horizontalDiv = document.createElement('div');
                 horizontalDiv.setAttribute('class', 'horizontalDiv');
+                horizontalDiv.addEventListener('mousedown', Util.moveOnColumn, false);
                 helperDiv.appendChild(horizontalDiv);
                 td.setAttribute('class', 'rowHeader');
                 textNode.innerText = insertedPosition;
             } else {
                 textNode.setAttribute('contentEditable', true);
             }
-
 
             newRow.appendChild(td);
 
@@ -255,31 +247,38 @@ var Util = {
         for (var row = 0; row < myTable.childElementCount; ++row) {
             var newTD = document.createElement('td');
             newTD.setAttribute('class', 'cell');
-
             var helperDiv = document.createElement('div');
             var textNode = document.createElement('text');
+            var tdHeight = myTable.children[row].children[currentColumn].firstChild.clientHeight;
 
+            helperDiv.style.height = tdHeight + 'px';
             var positionNode = myTable.children[row].children[insertPosition];
 
             if (row == 0) {
                 var lineDiv = document.createElement('div');
                 lineDiv.setAttribute('class', 'lineDiv');
+                lineDiv.addEventListener('mousedown', Util.moveOnColumn, false);
                 helperDiv.appendChild(textNode);
+                helperDiv.appendChild(lineDiv);
                 newTD.setAttribute('class', 'columnHeader');
-                textNode.innerHTML = positionNode.firstChild.firstChild.innerHTML;
-                myTable.style.width = myTable.clientWidth + 53 + 'px';
             }
-
-            helperDiv.appendChild(lineDiv);
-            myTable.children[row].insertBefore(newTD, positionNode);
+            Util.insertAfter(newTD, myTable.children[row].children[currentColumn]);
             newTD.appendChild(helperDiv);
         }
 
         var rowHeader = myTable.children[0];
         for (var i = insertPosition; i < rowHeader.childElementCount; ++i) {
-            rowHeader.children[i].firstChild.firstChild.innerText = String.fromCharCode(i + 64);
-        }
+            if(i <= 26){
+                rowHeader.children[i].firstChild.firstChild.innerText = String.fromCharCode(i + 64);
+            } else {
+                rowHeader.children[i].firstChild.firstChild.innerText = String.fromCharCode(i-27 + 97);
+            }
 
+        }
+    },
+
+    insertAfter: function (newNode, referenceNode) {
+        referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
     },
 
     deleteColumn: function (currentColumn) {
@@ -348,15 +347,18 @@ var Util = {
                 offset = mouseMoveEvent.clientY - currentLineDiv.getBoundingClientRect().top
                     - mousePositionToLineDivBorder;
                 currentLineDiv.style.top = currentLineDiv.offsetTop + offset + 'px';
-                currentLineDiv.style.left = '1px';
+                currentLineDiv.style.left = '0px';
             }
 
         };
+
+
 
         // mouseup event handler
         Util.mouseUpCallback = function (mouseUpEvent) {
 
             document.removeEventListener('mousemove', Util.mouseMoveCallback, false);
+            Util.removeStyleElement();
 
             if(isColumnMove) {
                 var originalTDWidth = divHelperInDiv.clientWidth;
@@ -365,7 +367,7 @@ var Util = {
 
                 tableWidth += newWidth - originalTDWidth;
                 divHelperInDiv.style.width = newWidth + 'px';
-                currentLineDiv.style.right = '-8px';
+                currentLineDiv.style.right = '-7px';
                 currentLineDiv.style.left = 'inherit';
                 tableNode.style.width = tableWidth + 'px';
             } else {
@@ -374,8 +376,8 @@ var Util = {
                 var tableHeight = tableNode.offsetHeight;
                 tableHeight += newHeight - originalTDHeight;
                 divHelperInDiv.style.height = newHeight + 'px';
-                currentLineDiv.style.left = '1px';
-                currentLineDiv.style.bottom = '8px';
+                currentLineDiv.style.left = '0px';
+                currentLineDiv.style.bottom = '7px';
                 tableNode.style.height = tableHeight + 'px';
             }
 
@@ -392,12 +394,19 @@ var Util = {
             }
 
         };
+
         document.addEventListener('mousemove', Util.mouseMoveCallback, false);
         document.addEventListener('mouseup', Util.mouseUpCallback, false);
 
     },
 
 
+    removeStyleElement: function () {
+        var element = document.getElementsByTagName('style'), index;
+        for(idnex = element.length - 1; index >= 0; --index) {
+            element[idnex].parentNode.removeChild(element[index]);
+        }
+    },
 
     //update current column's width
     updateCurrentColumnWidth: function (divHelperInDiv, newWidth) {
@@ -433,19 +442,19 @@ var Util = {
         var sheet = style.sheet;
 
         if (isColumnMove) {
-            sheet.addRule('div.selected:after', 'height: ' + lineStyle + 'px;');
+            sheet.addRule('div.lineDiv.selected:after', 'height: ' + lineStyle + 'px;');
         } else {
-            sheet.addRule('div.selected:after', 'width: ' + lineStyle + 'px;');
+            sheet.addRule('div.horizontalDiv.selected:after', 'width: ' + lineStyle + 'px;');
         }
 
     },
 
     inputDiv: function (event) {
         var td = event.target.parentNode;
-        console.log('event.target.parentNode.className: ' + event.target.parentNode.className);
         var textNode = event.target.firstChild;
         var divForInput = document.getElementById('inputDiv');
-        //divForInput.innerText = '';
+        console.log('row: ' + td.parentNode.rowIndex + ' column: ' + td.cellIndex);
+
         if(td.className == 'cell'){
 
             function setDivPosition() {
@@ -466,18 +475,21 @@ var Util = {
                     divForInput.style.backgroundColor = td.style.backgroundColor;
                     textNode.textContent = '';
             };
+
             Util.extractDivContentsToText = function () {
-                console.log('Div Content: ' + divForInput.innerText);
+                console.log('Output content to text node.....');
+                console.log('+row: ' + td.parentNode.rowIndex + ' column: ' + td.cellIndex);
+                console.log('Div Contents: ' + divForInput.innerText);
                 textNode.textContent = divForInput.innerText;
                 divForInput.style.display = 'none';
                 divForInput.innerText = '';
                 divForInput.removeEventListener('focus', Util.getContentFromTextNode, false);
                 divForInput.removeEventListener('blur', Util.extractDivContentsToText, false);
+                //document.getElementById('layout').removeEventListener('scroll', Util.extractDivContentsToText, false);
             };
 
             Util.completeInput = function (keyPressEvent) {
                 if(keyPressEvent.which == 13) {  // enter press event trigger
-                    console.log('key: ' + keyPressEvent.which);
                     Util.extractDivContentsToText();
                     divForInput.setAttribute('contenteditable', false);
                     divForInput.removeEventListener('keypress', Util.completeInput, false);
@@ -487,14 +499,18 @@ var Util = {
             divForInput.addEventListener('focus', Util.getContentFromTextNode, false);
             divForInput.addEventListener('blur', Util.extractDivContentsToText, false);
             divForInput.addEventListener('keypress', Util.completeInput, false);
+            //document.getElementById('layout').addEventListener('scroll', Util.extractDivContentsToText, false);
         }
-        },
+
+    },
 
     createInputDiv: function () {
         var divForInput = document.createElement('div');
         divForInput.setAttribute('id', 'inputDiv');
         document.body.appendChild(divForInput);
     },
+
+
 
     getContentFromTextNode: null,
     extractDivContentsToText: null,
@@ -525,13 +541,13 @@ function testForExcelMenu() {
     Util.hideMenu();
     var myTable = document.getElementById('layout');
     myTable.addEventListener('contextmenu', Util.showMenu, false);
-    document.addEventListener('dblclick', Util.hideMenu, false);
+    document.addEventListener('click', Util.hideMenu, false);
 }
 
 
 function testForInputDiv() {
     Util.createInputDiv();
-    var myTableLayout = document.getElementById('layout');
+    var myTableLayout = document.getElementById('myTable');
 
     myTableLayout.addEventListener('dblclick', Util.inputDiv, false);
 }
