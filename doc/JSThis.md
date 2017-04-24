@@ -79,7 +79,11 @@
     以上所表示的例子并不包含node环境，但是总体原则是，如何正确的使用`this`，`this`的变量值实际上和其上层对象的调用相关，并不完全像C++或者Java等面向对象的语言一样，这点注意区分，特别是函数闭包所带来的诡异现象
 
 ##  Reference
-    [this MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
-    [all this](http://bjorn.tipling.com/all-this)
-    [Javascript中this的用法](http://www.ruanyifeng.com/blog/2010/04/using_this_keyword_in_javascript.html)
-    [深入理解Javascript中的this]http://www.cnblogs.com/rainman/archive/2009/05/03/1448392.html()
+
+- [this MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)
+
+- [all this](http://bjorn.tipling.com/all-this)
+    
+- [Javascript中this的用法](http://www.ruanyifeng.com/blog/2010/04/using_this_keyword_in_javascript.html)
+
+- [深入理解Javascript中的this](http://www.cnblogs.com/rainman/archive/2009/05/03/1448392.html)
