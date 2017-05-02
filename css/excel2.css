@@ -1,0 +1,150 @@
+/**
+ * The container style for layout
+ */
+
+#container {
+    background-color: white;
+    overflow: scroll;
+    display: table;
+}
+
+.cell {
+    background-color: white;
+    overflow: hidden;
+}
+
+/**
+ * The style of row header and column header
+ */
+
+.rowHeader,
+.columnHeader {
+    background-color: #e6e6e6;
+    user-select: none;
+    text-align: center;
+}
+
+
+/**
+ * The style after hover
+ */
+
+.rowHeader,
+.columnHeader:hover {
+    background-color: #94bba4;
+}
+
+
+/**
+ * The menu to  manipulate the excel
+ */
+
+div#menu {
+    margin: 0px;
+    border: thin solid #808080;
+    cursor: default;
+    background-color: white;
+    font-family: Arial;
+    font-size: 4px;
+    position: absolute;
+    z-index: 1;
+}
+
+
+/**
+* The input element was selected
+**/
+
+.selected {
+    border: 0px solid cornflowerblue;
+    position: absolute;
+    z-index: 1;
+}
+
+
+/**
+ * The vertical div for move
+ */
+
+.verticalDiv {
+    width: 15px;
+    height: 20px;
+    position: absolute;
+    right: -7px;
+    top: 0px;
+    z-index: 1;
+}
+
+
+/**
+ * The style after vertical div
+ */
+
+.verticalDiv:after {
+    content: '';
+    margin: 0px;
+    width: 0px;
+    height: 20px;
+    position: absolute;
+    border-left: 1px solid #94bba4;
+}
+
+
+/**
+ * The style all about horizontal div
+ */
+
+div.horizontalDiv {
+    width: 53px;
+    height: 15px;
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+}
+
+.horizontalDiv:after {
+    content: '';
+    margin: 0px;
+    width: 53px;
+    height: 0px;
+    position: absolute;
+    bottom: 7px;
+    left: 0px;
+    border-top: 1px solid #94bba4;
+}
+
+.horizontalDiv.selected,
+.verticalDiv.selected {
+    border: 0px solid cornflowerblue;
+    position: absolute;
+    z-index: 1;
+}
+
+.horizontalDiv:hover,
+.verticalDiv:hover {
+    background-color: #5b5b69;
+}
+
+
+/**
+ * The menu option
+ */
+
+button.option {
+    width: 50px;
+    border: 1px solid;
+    padding: 0px;
+    margin: 1px;
+    display: block;
+    background-color: white;
+}
+
+
+/*button.option {
+    width: 50px;
+    height: 20px;
+    text-align: center;
+    background-color: white;
+    position: absolute;
+}
+*/
