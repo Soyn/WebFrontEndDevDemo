@@ -8,6 +8,7 @@ class Util {
     constructor(rowCounts = DEFAULTROWCOUNTS, columnCounts = DEFAULTCOLUMNCOUNTS) {
         this.rowCounts = rowCounts;
         this.columnCounts = columnCounts;
+        console.log('From Util --> rowCounts: ' + this.rowCounts + ' columnCounts: ' + this.columnCounts)
     }
 
     /**
@@ -18,15 +19,20 @@ class Util {
          * To insert row at specified position
          */
     insert(event, initializeTable) {
+        console.log('Util --> enter insert.....')
         if (!initializeTable) {
+            console.log('Util --> Just insert')
             // @TODO:
         } else {
+            console.log('Init sheet......')
             let myTable = $('#myTable')
             myTable.append('<div class="tr"></div>')
-            let currentRow = $('.tr').lastChild()
-
-            for(let col = 0; col < this.columnCounts; ++i) {
-                if(currentRow.cellIndex !== 0) {
+            console.log('div tr inserted......')
+            let currentRow = myTable.children().last()
+            console.log(typeof currentRow)
+            let currentRowIndex = currentRow.index()
+            for(let col = 0; col < this.columnCounts; ++col) {
+                if(currentRowIndex !== 0) {
                     if(col) {
                         currentRow.append('<div class="cell"></div>')
                     } else {
@@ -43,6 +49,9 @@ class Util {
             }
         }
     }
+    print(){
+        console.log("It works!")
+    }
 }
 
-export {Util}
+export default Util

@@ -2,15 +2,26 @@
  * The container style for layout
  */
 
-#container {
+div#container {
     background-color: white;
     overflow: scroll;
     display: table;
+    overflow: scroll;
 }
-
-.cell {
+div#myTable {
+    border-collapse: collapse;
     background-color: white;
-    overflow: hidden;
+    overflow: auto;
+}
+div.cell {
+    width: 53px;
+    height: 20px;
+    margin: 0px;
+    position: relative;
+    border-right: 1px solid #d9d9d9;
+    border-bottom: 1px solid #d9d9d9;
+    padding: 0px;
+    display: inline-block;
 }
 
 /**
@@ -19,9 +30,12 @@
 
 .rowHeader,
 .columnHeader {
+    width: 53px;
+    height: 20px;
     background-color: #e6e6e6;
     user-select: none;
     text-align: center;
+    display: inline-block;
 }
 
 

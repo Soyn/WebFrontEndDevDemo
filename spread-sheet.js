@@ -7,17 +7,17 @@ import Util from './util'
 
 const DEFAULTROWCOUNTS = 50,
     DEFAULTCOLUMNCOUNTS = 27
-
 class SpreadSheet {
     constructor(rowCounts = DEFAULTROWCOUNTS, columnCounts = DEFAULTCOLUMNCOUNTS) {
-            if (rowCounts > 0 && columnCounts >= 0) {
-                this.rowCounts = rowCounts
-                this.columnCounts = columnCounts
-                this.utilObject = new Util()
-            } else {
-                alert("Invalid!")
-            }
+        if (rowCounts > 0 && columnCounts > 0) {
+            this.rowCounts = rowCounts
+            this.columnCounts = columnCounts
+            console.log("From spread-sheet --> rowCounts: " + this.rowCounts + " ColumnCounts: " + this.columnCounts)
+            this.utilObject = new Util()
+        } else {
+            alert("Invalid!")
         }
+    }
 
     /**
      * Insert the row or column into the spread sheet
@@ -25,8 +25,9 @@ class SpreadSheet {
      * @param:{event object}
      * @public
      */
-    insert(event, initializeTable = false) {
-        utilObject.insert(event, initializeTable)
+
+    insert(initializeTable = false) {
+        this.utilObject.insert(event, initializeTable)
     }
 
     /**
@@ -35,7 +36,8 @@ class SpreadSheet {
      * @param {string} position
      * @public
      */
-    delete(position) {}
+    delete(position) {
+    }
 
     /**
      * Clear the contents of row or column
@@ -43,7 +45,8 @@ class SpreadSheet {
      * @param {string} position
      * @public
      */
-    clear(position) {}
+    clear(position) {
+    }
 
     /**
      * Generate the spread sheet body
@@ -52,8 +55,10 @@ class SpreadSheet {
     generateSpreadSheetBody() {
         // create sheet layout
         $('#container').append('<div id="myTable"></div>')
-        console.log('init.....')
-        this.insert(true)
+        console.log('From spread-sheet --> Init.....')
+        for (let i = 0; i < this.rowCounts; ++i){
+            this.insert(true)
+        }
     }
 
     /**
@@ -61,14 +66,20 @@ class SpreadSheet {
      *
      * @public
      */
-    inputToSheetCell() {}
+    inputToSheetCell() {
+    }
 
     /**
      * Change the size of cell
      *
      * @public
      */
-    changeTheSizeOfCell() {}
+    changeTheSizeOfCell() {
+    }
 }
 
-let sheet = new SpreadSheet().generateSpreadSheetBody()
+let sheet = new SpreadSheet()
+$(sheet.generateSpreadSheetBody(true))
+
+
+
