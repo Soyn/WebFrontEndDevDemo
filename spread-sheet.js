@@ -14,6 +14,7 @@ class SpreadSheet {
             this.columnCounts = columnCounts
             console.log("From spread-sheet --> rowCounts: " + this.rowCounts + " ColumnCounts: " + this.columnCounts)
             this.utilObject = new Util()
+            this.self = this
         } else {
             alert("Invalid!")
         }
@@ -26,8 +27,9 @@ class SpreadSheet {
      * @public
      */
 
-    insert(initializeTable = false) {
-        this.utilObject.insert(event, initializeTable)
+    insert(event) {
+        let target = event.target
+        this.utilObject.insert(target)
     }
 
     /**
@@ -56,9 +58,7 @@ class SpreadSheet {
         // create sheet layout
         $('#container').append('<div id="myTable"></div>')
         console.log('From spread-sheet --> Init.....')
-        for (let i = 0; i < this.rowCounts; ++i){
-            this.insert(true)
-        }
+        this.utilObject.initializeSheet()
     }
 
     /**
@@ -80,6 +80,10 @@ class SpreadSheet {
 
 let sheet = new SpreadSheet()
 $(sheet.generateSpreadSheetBody(true))
+document.body.addEventListener('click', function (evt) {
+    sheet.insert(evt)
+}, false)
+
 
 
 

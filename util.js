@@ -15,36 +15,112 @@ class Util {
      * Show options menu
      */
     showMenu() {}
-        /**
-         * To insert row at specified position
-         */
-    insert(event, initializeTable) {
+    /**
+     * To insert row at specified position
+     * @param {object} event, {boolean} initializeTable
+     * @public
+     */
+    insert(target) {
         console.log('Util --> enter insert.....')
-        if (!initializeTable) {
-            console.log('Util --> Just insert')
-            // @TODO:
+        let className = $(target).attr('class')
+        let tdClassName = ''
+        console.log('Insert on: ' + className)
+
+        if (className === 'rowHeader') {  // add new row
+
+            let positionRow = $(target).parent()
+
+            if(positionRow.index() > 1) {
+                positionRow = positionRow.prev()
+            }
+
+            let newRow = $('<div class="tr"></div>')
+
+            for(let elem of positionRow.children()) {
+                if(elem.index() === 1){
+                    tdClassName = 'rowHeader'
+                } else {
+                    tdClassName = 'cell'
+                }
+
+                let newTd =$(`<div class=${tdClassName}></div>`)
+                let [newWidth, newHeight] = [elem.innerWidth, elem.innerHeight]
+                console.log('clientWidth: ' + newWidth + ' clientHeight: ' + newHeight)
+                newTd.css({'width': newWidth, 'height': newHeight})
+                newRow.append(newTd)
+            }
+            newRow.insertAfter(positionRow)
+            ++this.rowCounts
+            this.updateHeaderContent(newRow.index(), true)
         } else {
-            console.log('Init sheet......')
-            let myTable = $('#myTable')
+            //@TODO
+        }
+    }
+
+    /***
+     * Update the header content
+     *
+     * @param {number} index, {boolean} isRow
+     * @public
+     */
+    updateHeaderContent(index = 0, isRow = true){
+        if(index) {
+            let rows = $('.tr')
+            for(let i = index; index < this.rowCounts; ++i){
+                if (isRow){  // update the row header content
+                    rows.eq(i).children().first().innerHTML = i
+                } else {  // update column header content
+                    let alpha = ''
+                    for(let j = index; j < this.columnCounts; ++j) {
+                        if(j <= 26){
+                            alpha = string.fromCharCode(j + 64)
+                        } else {
+                            alpha = string.fromCharCode(j - 27 + 97)
+                        }
+                        rows.eq(i).children().eq(j).innerHTML = alpha
+                    }
+                }
+            }
+        } else {
+            alert('Insert in right position');
+        }
+    }
+
+    /**
+     * Initialize the sheet
+     *
+     * @public
+     */
+    initializeSheet(){
+        console.log('Init sheet......')
+        let myTable = $('#myTable')
+        for(let i = 0; i < this.rowCounts; ++i){
             myTable.append('<div class="tr"></div>')
             console.log('div tr inserted......')
+
             let currentRow = myTable.children().last()
-            console.log(typeof currentRow)
             let currentRowIndex = currentRow.index()
+
             for(let col = 0; col < this.columnCounts; ++col) {
-                if(currentRowIndex !== 0) {
+                if(currentRowIndex !== 0) {  // not the first row
                     if(col) {
                         currentRow.append('<div class="cell"></div>')
                     } else {
-                        currentRow.append('<div class="columnHeader">${col}</div>')
+                        currentRow.append(`<div class="rowHeader">
+                            ${currentRowIndex}
+                            <div class="horizontalDiv"></div>
+                            </div>`)
                     }
                 } else {  // first row in sheet
                     let title = ''
 
                     if(col){
-                        title = String.fromCharCode(col+65)
+                        title = String.fromCharCode(col+64)
                     }
-                    currentRow.append('<div class="rowHeader">${title}</div>')
+                    currentRow.append(`<div class="columnHeader">
+                        ${title}
+                        <div class="verticalDiv"></div>
+                        </div>`)
                 }
             }
         }
