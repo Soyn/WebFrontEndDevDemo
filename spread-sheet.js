@@ -27,9 +27,10 @@ class SpreadSheet {
      * @public
      */
 
-    insert(event) {
-        let target = event.target
+    insert(evt) {
+        let target = evt.target
         this.utilObject.insert(target)
+        this.hideMenu()
     }
 
     /**
@@ -38,7 +39,10 @@ class SpreadSheet {
      * @param {string} position
      * @public
      */
-    delete(position) {
+    delete(evt) {
+        let target = evt.target
+        this.utilObject.delete(target)
+        this.hideMenu()
     }
 
     /**
@@ -57,7 +61,6 @@ class SpreadSheet {
     generateSpreadSheetBody() {
         // create sheet layout
         $('#container').append('<div id="myTable"></div>')
-        console.log('From spread-sheet --> Init.....')
         this.utilObject.initializeSheet()
     }
 
@@ -70,20 +73,59 @@ class SpreadSheet {
     }
 
     /**
-     * Change the size of cell
+     * R
      *
      * @public
      */
-    changeTheSizeOfCell() {
+    resize(evt) {
+        this.utilObject.resize(evt)
+    }
+    /**
+     * Show options menu
+     * @public*/
+    showMenu(evt) {
+        evt.preventDefault()
+        let menuOptions = $('.menuLayout')
+        if(menuOptions){
+            $('#insert').on('click', () => {
+                this.insert(evt)
+            })
+            $('#delete').on('click', () => {
+                this.delete(evt)
+            })
+
+            menuOptions.css({'visibility': 'visible'})
+            let target = evt.target
+            let className = $(target).attr('class')
+
+            if(className === 'rowHeader' || className === 'columnHeader') {
+                this.utilObject.setMenuPosition(evt)
+            } else {
+                this.hideMenu()
+            }
+        } else {
+            alert('Error: No menu exsits!')
+        }
+    }
+
+    /**
+     * Hide the menu
+     */
+    hideMenu(){
+        $('.menuLayout').css({'visibility': 'hidden'})
+        $('#insert').off('click')
+        $('#delete').off('click')
     }
 }
 
 let sheet = new SpreadSheet()
 $(sheet.generateSpreadSheetBody(true))
-document.body.addEventListener('click', function (evt) {
-    sheet.insert(evt)
-}, false)
+$('#myTable').on('contextmenu', (evt) => {
+    sheet.showMenu(evt)
+})
 
-
+$('#myTable').on('mousedown', function (evt) {
+    sheet.resize(evt)
+})
 
 

@@ -8,8 +8,8 @@ div#container {
 }
 
 div#myTable {
-    width: 500px;
-    height: 500px;
+    width: 800px;
+    height: 1000px;
     background-color: white;
     overflow: auto;
     white-space: nowrap;
@@ -61,20 +61,6 @@ div.tr{
 }
 
 
-/**
- * The menu to  manipulate the excel
- */
-
-div#menu {
-    margin: 0px;
-    border: thin solid #808080;
-    cursor: default;
-    background-color: white;
-    font-family: Arial;
-    font-size: 4px;
-    position: absolute;
-    z-index: 1;
-}
 
 
 /**
@@ -159,9 +145,29 @@ div.horizontalDiv {
 
 button.option {
     width: 50px;
-    border: 1px solid;
+    border: 1px solid #d9d9d9;
     padding: 0px;
-    margin: 1px;
+    margin: 0px;
     display: block;
     background-color: white;
+}
+
+.option:hover{
+    background-color: #d9d9d9;
+}
+
+/**
+ * The menu to  manipulate the excel
+ */
+
+div.menuLayout {
+    margin: 0px;
+    border: thin solid #808080;
+    cursor: default;
+    background-color: white;
+    font-family: Arial;
+    font-size: 4px;
+    position: absolute;
+    box-shadow: 0px 0px 5px 0px #6D6B75;
+    z-index: 99;
 }
