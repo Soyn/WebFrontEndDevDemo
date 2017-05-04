@@ -9,12 +9,8 @@ class Util {
         this.rowCounts = rowCounts;
         this.columnCounts = columnCounts;
         console.log('From Util --> rowCounts: ' + this.rowCounts + ' columnCounts: ' + this.columnCounts)
+        this.menuOptions = ['insert', 'delete', 'clear']
     }
-
-    /**
-     * Show options menu
-     */
-    showMenu() {}
     /**
      * To insert row at specified position
      * @param {object} event, {boolean} initializeTable
@@ -23,28 +19,33 @@ class Util {
     insert(target) {
         console.log('Util --> enter insert.....')
         let className = $(target).attr('class')
-        let tdClassName = ''
         console.log('Insert on: ' + className)
 
         if (className === 'rowHeader') {  // add new row
 
             let positionRow = $(target).parent()
 
-            if(positionRow.index() > 1) {
+            if (positionRow.index() > 1) {
                 positionRow = positionRow.prev()
             }
 
             let newRow = $('<div class="tr"></div>')
+            let originalTds = $.makeArray(positionRow.children())
 
-            for(let elem of positionRow.children()) {
-                if(elem.index() === 1){
-                    tdClassName = 'rowHeader'
+            for(let elem of originalTds) {
+                let newTd = ''
+                let tdClassName = elem.className
+
+                if (tdClassName === 'rowHeader') {
+                    newTd = $(`<div class=${tdClassName}>
+                                    <text></text>
+                                    <div class="horizontalDiv"></div>
+                               </div>`)
                 } else {
-                    tdClassName = 'cell'
+                    newTd = $(`<div class=${tdClassName}></div>`)
                 }
 
-                let newTd =$(`<div class=${tdClassName}></div>`)
-                let [newWidth, newHeight] = [elem.innerWidth, elem.innerHeight]
+                let [newWidth, newHeight] = [[elem.clientWidth], [elem.clientHeight]]
                 console.log('clientWidth: ' + newWidth + ' clientHeight: ' + newHeight)
                 newTd.css({'width': newWidth, 'height': newHeight})
                 newRow.append(newTd)
@@ -52,10 +53,21 @@ class Util {
             newRow.insertAfter(positionRow)
             ++this.rowCounts
             this.updateHeaderContent(newRow.index(), true)
-        } else {
-            //@TODO
+
+        } else if (className === 'columnHeader') {
+            let indexOfTarget = $(target).index()
+            $.each($('.tr'), (index, value) => {
+                let newTd = ''
+                let positionTd = ''
+                if(index === 0) {  // first row in sheet
+                    newTd = $('<div class="columnHeader"> <text></text></div>')
+                } else {
+
+                }
+            })
         }
     }
+
 
     /***
      * Update the header content
@@ -63,16 +75,17 @@ class Util {
      * @param {number} index, {boolean} isRow
      * @public
      */
-    updateHeaderContent(index = 0, isRow = true){
-        if(index) {
+    updateHeaderContent(index = 0, isRow = true) {
+        if (index) {
             let rows = $('.tr')
-            for(let i = index; index < this.rowCounts; ++i){
-                if (isRow){  // update the row header content
-                    rows.eq(i).children().first().innerHTML = i
+            for (let i = index; i < this.rowCounts; ++i) {
+                if (isRow) {  // update the row header content
+                    let textNode = rows.eq(i).children().get(0).firstElementChild
+                    textNode.innerHTML = i
                 } else {  // update column header content
                     let alpha = ''
-                    for(let j = index; j < this.columnCounts; ++j) {
-                        if(j <= 26){
+                    for (let j = index; j < this.columnCounts; ++j) {
+                        if (j <= 26) {
                             alpha = string.fromCharCode(j + 64)
                         } else {
                             alpha = string.fromCharCode(j - 27 + 97)
@@ -91,41 +104,42 @@ class Util {
      *
      * @public
      */
-    initializeSheet(){
+    initializeSheet() {
         console.log('Init sheet......')
         let myTable = $('#myTable')
-        for(let i = 0; i < this.rowCounts; ++i){
+        for (let i = 0; i < this.rowCounts; ++i) {
             myTable.append('<div class="tr"></div>')
             console.log('div tr inserted......')
 
             let currentRow = myTable.children().last()
             let currentRowIndex = currentRow.index()
 
-            for(let col = 0; col < this.columnCounts; ++col) {
-                if(currentRowIndex !== 0) {  // not the first row
-                    if(col) {
-                        currentRow.append('<div class="cell"></div>')
+            for (let col = 0; col < this.columnCounts; ++col) {
+                if (currentRowIndex !== 0) {  // not the first row
+                    if (col) {
+                        currentRow.append('<div class="cell"><text></text></div>')
                     } else {
                         currentRow.append(`<div class="rowHeader">
-                            ${currentRowIndex}
+                            <text>${currentRowIndex}</text>
                             <div class="horizontalDiv"></div>
                             </div>`)
                     }
                 } else {  // first row in sheet
                     let title = ''
 
-                    if(col){
-                        title = String.fromCharCode(col+64)
+                    if (col) {
+                        title = String.fromCharCode(col + 64)
                     }
                     currentRow.append(`<div class="columnHeader">
-                        ${title}
+                        <text>${title}</text>
                         <div class="verticalDiv"></div>
                         </div>`)
                 }
             }
         }
     }
-    print(){
+
+    print() {
         console.log("It works!")
     }
 }

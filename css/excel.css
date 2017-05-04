@@ -32,6 +32,7 @@ td.columnHeader, td.rowHeader {
     background-color: #e6e6e6;
     user-select: none;
     text-align: center;
+    display: inline;
 }
 
 td.columnHeader:hover, td.rowHeader:hover{
