@@ -7,6 +7,7 @@ import Util from './util'
 
 const DEFAULTROWCOUNTS = 50,
     DEFAULTCOLUMNCOUNTS = 27
+
 class SpreadSheet {
     constructor(rowCounts = DEFAULTROWCOUNTS, columnCounts = DEFAULTCOLUMNCOUNTS) {
         if (rowCounts > 0 && columnCounts > 0) {
@@ -51,7 +52,9 @@ class SpreadSheet {
      * @param {string} position
      * @public
      */
-    clear(position) {
+    clear(evt) {
+        let target = evt.target
+        this.utilObject.clear(target)
     }
 
     /**
@@ -64,13 +67,7 @@ class SpreadSheet {
         this.utilObject.initializeSheet()
     }
 
-    /**
-     * Get content
-     *
-     * @public
-     */
-    inputToSheetCell() {
-    }
+
 
     /**
      * R
@@ -116,10 +113,21 @@ class SpreadSheet {
         $('.menuLayout').css({'visibility': 'hidden'})
         $('#insert').off('click')
         $('#delete').off('click')
+        $('body').off('mousewheel')
+    }
+
+    /**
+     * Get input fron user
+     *
+     * @public
+     */
+    input(evt) {
+        this.utilObject.input(evt)
     }
 }
 
 let sheet = new SpreadSheet()
+
 $(sheet.generateSpreadSheetBody(true))
 $('#myTable').on('contextmenu', (evt) => {
     sheet.showMenu(evt)
@@ -127,6 +135,9 @@ $('#myTable').on('contextmenu', (evt) => {
 
 $('#myTable').on('mousedown', function (evt) {
     sheet.resize(evt)
+})
+$('#myTable').on('click', function (evt) {
+    sheet.input(evt)
 })
 
 

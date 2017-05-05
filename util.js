@@ -11,6 +11,49 @@ class Util {
         console.log('From Util --> rowCounts: ' + this.rowCounts + ' columnCounts: ' + this.columnCounts)
         this.menuOptions = ['insert', 'delete', 'clear']
     }
+    /**
+     * Initialize the sheet
+     *
+     * @public
+     */
+    initializeSheet() {
+        console.log('Init sheet......')
+        let myTable = $('#myTable')
+        for (let i = 0; i < this.rowCounts; ++i) {
+            myTable.append('<div class="tr"></div>')
+            console.log('div tr inserted......')
+
+            let currentRow = myTable.children().last()
+            let currentRowIndex = currentRow.index()
+
+            for (let col = 0; col < this.columnCounts; ++col) {
+                if (currentRowIndex !== 0) {  // not the first row
+                    if (col) {
+                        currentRow.append('<div class="cell"><text></text></div>')
+                    } else {
+                            currentRow.append(`<div class="rowHeader">
+                            <text>${currentRowIndex}</text>
+                            <div class="horizontalDiv"></div>
+                            </div>`)
+                    }
+                } else {
+                    let title = ''
+
+                    if (col) {
+                        title = String.fromCharCode(col + 64)
+                        currentRow.append(`<div class="columnHeader">
+                        <text>${title}</text>
+                        <div class="verticalDiv"></div>
+                        </div>`)
+                    } else {
+                        currentRow.append('<div id="header"></div>')
+                    }
+
+                }
+            }
+        }
+        this.makeOptionsMenu()
+    }
 
     /**
      * To insert row at specified position
@@ -43,12 +86,12 @@ class Util {
                                     <div class="horizontalDiv"></div>
                                </div>`)
                 } else {
-                    newTd = $(`<div class=${tdClassName}></div>`)
+                    newTd = $(`<div class=${tdClassName}><text></text></div>`)
                 }
 
                 let [newWidth, newHeight] = [[elem.clientWidth], [elem.clientHeight]]
                 console.log('clientWidth: ' + newWidth + ' clientHeight: ' + newHeight)
-                newTd.css({'width': newWidth, 'height': newHeight})
+                newTd.css({'width': newWidth, 'height': newHeight, 'line-height': newHeight + 'px'})
                 newRow.append(newTd)
             }
             newRow.insertAfter(positionRow)
@@ -57,16 +100,20 @@ class Util {
 
         } else if (className === 'columnHeader') {  // insert new column
             let indexOfTarget = $(target).index()
+
+
             $.each($('.tr'), (index, value) => {
                 let newTd = ''
-                let positionTd = ''
+                let [newWidth, newHeight] = [[$(value).children().eq(indexOfTarget).innerWidth()],
+                    [$(value).children().eq(indexOfTarget).innerHeight()]]
                 if (index === 0) {  // first row in sheet
                     newTd = $('<div class="columnHeader"><text></text><div class="verticalDiv"></div></div>')
                 } else {
-                    newTd = $('<div class="cell"></div>')
+                    newTd = $('<div class="cell"><text></text></div>')
+                    newTd.css({'line-height': newHeight + 'px'})
                 }
 
-                newTd.innerHeight($(value).children().eq(indexOfTarget).innerHeight())
+                newTd.css({'width': newWidth, 'height': newHeight})
                 let targetTd = $(value).children().eq(indexOfTarget).prev()
                 newTd.insertAfter(targetTd)
             })
@@ -106,46 +153,7 @@ class Util {
         }
     }
 
-    /**
-     * Initialize the sheet
-     *
-     * @public
-     */
-    initializeSheet() {
-        console.log('Init sheet......')
-        let myTable = $('#myTable')
-        for (let i = 0; i < this.rowCounts; ++i) {
-            myTable.append('<div class="tr"></div>')
-            console.log('div tr inserted......')
 
-            let currentRow = myTable.children().last()
-            let currentRowIndex = currentRow.index()
-
-            for (let col = 0; col < this.columnCounts; ++col) {
-                if (currentRowIndex !== 0) {  // not the first row
-                    if (col) {
-                        currentRow.append('<div class="cell"><text></text></div>')
-                    } else {
-                        currentRow.append(`<div class="rowHeader">
-                            <text>${currentRowIndex}</text>
-                            <div class="horizontalDiv"></div>
-                            </div>`)
-                    }
-                } else {  // first row in sheet
-                    let title = ''
-
-                    if (col) {
-                        title = String.fromCharCode(col + 64)
-                    }
-                    currentRow.append(`<div class="columnHeader">
-                        <text>${title}</text>
-                        <div class="verticalDiv"></div>
-                        </div>`)
-                }
-            }
-        }
-        this.makeOptionsMenu()
-    }
 
     /**
      * delete row or column
@@ -219,6 +227,13 @@ class Util {
         console.log('pageX: ' + evt.pageX)
         console.log('pageY: ' + evt.pageY)
         $('.menuLayout').css({'left': posX + 'px', 'top': posY + 'px'})
+        $('body').on({
+            'mousewheel': (evt) => {
+                if(evt.target.id === 'el') return
+                evt.preventDefault()
+                evt.stopPropagation()
+            }
+        })
     }
 
     /**
@@ -230,6 +245,7 @@ class Util {
     resize(mousedownEvt) {
         let target = mousedownEvt.target
         let className = $(target).attr('class')
+
         if (className === 'horizontalDiv' || className === 'verticalDiv') {
             let baseLine = $('#myTable').innerHeight()
             let mouseToResizeDivBorder = mousedownEvt.clientX - target.getBoundingClientRect().left
@@ -239,7 +255,9 @@ class Util {
                 baseLine = $('#myTable').innerWidth()
                 mouseToResizeDivBorder = mousedownEvt.clientY - target.getBoundingClientRect().top
             }
+
             console.log('baseLine: ' + baseLine + ' mouseToResizeDivBirder: ' + mouseToResizeDivBorder)
+
             $(target).addClass('selected')
 
             $(`<style type="text/css" id="dynamic"></style>`).appendTo('head')
@@ -260,39 +278,114 @@ class Util {
                 let offset = 0
                 if (className === 'verticalDiv') {
                     offset = mousemoveEvent.clientX - target.getBoundingClientRect().left - mouseToResizeDivBorder
-                    let left = target.offsetLeft + offset + 'px'
+                    let left = target.offsetLeft + offset
                     console.log('left: ' + left)
-                    $(target).css({'left': left, 'right': 'inherit'})
-                    $(target).parent().css({'width': left})
+                    $(target).css({'left': left + 'px', 'right': 'inherit'})
+                    $(target).parent().css({'width': (left + target.clientWidth / 2) + 'px'})
                 } else {
                     if (className === 'horizontalDiv') {
                         offset = mousemoveEvent.clientY - target.getBoundingClientRect().top - mouseToResizeDivBorder
-                        let top = target.offsetTop + offset + 'px'
+                        let top = target.offsetTop + offset
                         console.log('top: ' + top)
-                        $(target).css({'top': top, 'left': '0px'})
-                        $(target).parent().css({'height': top})
+                        $(target).css({'top': top + 'px', 'left': '0px'})
+                        $(target).parent().css({'height': (top + target.clientHeight / 2) + 'px'})
                     }
                 }
             }
 
             let mouseupHandler = (mouseupEvt) => {
-                $('#myTable').off('mousedown')
                 $('#myTable').off('mousemove')
-                let target = mouseupEvt.target
                 let className = $(target).attr('class')
-                let targetIndex = $(target).index()
-                let rows = $('.tr')
-                if(className === 'verticalDiv') {
-                    
-                } else {
+                let targetIndex = $(target).parent().index()
 
+                console.log('targetClassName: ' + className + ' targetIndex: ' + targetIndex)
+
+                if(className === 'verticalDiv selected') {
+                    let newWidth = $(target).parent().innerWidth()
+                    console.log('newWidth: ' + newWidth)
+                    let rows = $.makeArray($('.tr'))
+
+                    $.map(rows, (row) => {
+                        console.log('type: ' + typeof row + ' rowIndex: ' + row.cellIndex)
+                        $(row).children().eq(targetIndex).css({'width': newWidth + 'px'})
+                    })
+                } else {
+                    let newHeight = $(target).parent().innerHeight()
+                    console.log('newHeight: ' + newHeight)
+                    let row = $(target).parent().parent()
+                    let tds = $.makeArray(row.children())
+                    $.map(tds, (td) => {
+                        console.log('type: ' + typeof td + 'cellIndex' + td.cellIndex)
+                        $(td).css({'height': newHeight + 'px', 'line-height': newHeight + 'px'})
+                    })
                 }
+                $(target).removeClass('selected')
+                $('#myTable').off('mouseup')
             }
             $('#myTable').on('mousemove', mouseMoveHandler)
             $('#myTable').on('mouseup', mouseupHandler)
         }
     }
 
+    /**
+     * handler input
+     *
+     * @public
+     */
+    input(evt) {
+        let target = evt.target
+        let className = $(target).attr('class')
+        if (className === 'cell') {
+            $('#input').off()  // remove all the event handler to keep clear
+            $('#input').text('')
+            $('.menuLayout').css({'visibility': 'hidden'})
+            let [top, left] = [target.getBoundingClientRect().top + window.pageYOffset,
+                target.getBoundingClientRect().left + window.pageXOffset]
+
+            console.log('target.getBoundingClientRect().top: ' + target.getBoundingClientRect().top +
+                ' target.getBoundingClientRect().left: ' + target.getBoundingClientRect().left)
+            console.log('window.pageYOffset: ' + window.pageYOffset + ' window.pageYOffset: ' + window.pageYOffset)
+            console.log('top: ' + top + ' left: ' + left)
+            let inputDivWidth = target.clientWidth - 2
+            let inputDivHeight = target.clientHeight - 2
+            let backgroundColor = $(target).css('background-color')
+            console.log('className: ' + className)
+
+            $('#input').css({
+                //'top': top + 'px',
+                //'left': left + 'px',
+                'width': inputDivWidth + 'px',
+                'height': inputDivHeight,
+                'border': '2px solid black',
+                'visibility': 'visible',
+                'background-color': backgroundColor,
+            }).animate({'left':left + 'px', 'top': top + 'px'}, 120)
+
+            let inputDiv = $('#input')
+            let textNode = target.firstElementChild
+            let getContentFromCell = (dblclickEvt) => {
+                inputDiv.text(textNode.innerHTML)
+                textNode.innerHTML = ''
+                $(inputDiv).attr('contenteditable', true)
+            }
+            let extractContentToCell = () => {
+                textNode.innerHTML = inputDiv.text()
+                $(inputDiv).css({'visibility': 'hidden'})
+                $('#myTable').off('scroll')
+            }
+            let test = (evt) => {
+                evt.preventDefault()
+            }
+            $('#input').on('dblclick', getContentFromCell)
+            $('#input').on('blur', extractContentToCell)
+            $('#myTable').on('scroll', extractContentToCell)
+            $('#input').on('keypress', (evt) => {
+                if(evt.which === 13) {
+                    extractContentToCell()
+                }
+            })
+        }
+    }
 
     print() {
         console.log("It works!")
