@@ -86,6 +86,7 @@ class SpreadSheet {
     showMenu(evt) {
         evt.preventDefault()
         let menuOptions = $('.menuLayout')
+
         if(menuOptions){
             $('#insert').on('click', () => {
                 this.insert(evt)

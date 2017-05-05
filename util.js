@@ -11,6 +11,7 @@ class Util {
         console.log('From Util --> rowCounts: ' + this.rowCounts + ' columnCounts: ' + this.columnCounts)
         this.menuOptions = ['insert', 'delete', 'clear']
     }
+
     /**
      * To insert row at specified position
      * @param {object} event, {boolean} initializeTable
@@ -32,7 +33,7 @@ class Util {
             let newRow = $('<div class="tr"></div>')
             let originalTds = $.makeArray(positionRow.children())
 
-            for(let elem of originalTds) {
+            for (let elem of originalTds) {
                 let newTd = ''
                 let tdClassName = elem.className
 
@@ -59,7 +60,7 @@ class Util {
             $.each($('.tr'), (index, value) => {
                 let newTd = ''
                 let positionTd = ''
-                if(index === 0) {  // first row in sheet
+                if (index === 0) {  // first row in sheet
                     newTd = $('<div class="columnHeader"><text></text><div class="verticalDiv"></div></div>')
                 } else {
                     newTd = $('<div class="cell"></div>')
@@ -85,7 +86,7 @@ class Util {
         if (index) {
             let rows = $('.tr')
             if (isRow) {  // update the row header content
-                for(let i = index; i < this.rowCounts; ++i){
+                for (let i = index; i < this.rowCounts; ++i) {
                     rows.eq(i).children().get(0).firstElementChild.innerHTML = i
                 }
             } else {  // update column header content
@@ -149,20 +150,20 @@ class Util {
     /**
      * delete row or column
      */
-    delete(target){
+    delete(target) {
         let className = $(target).attr('class')
-        if(className === 'rowHeader'){
+        if (className === 'rowHeader') {
             let toBeDeletedRow = $(target).parent()
             let toBeDeletedRowIndex = toBeDeletedRow.index()
             toBeDeletedRow.remove()
             this.rowCounts -= 1
 
             let rowHeaders = $('.rowHeader')
-            for(let i = toBeDeletedRowIndex; i < this.rowCounts; ++i) {
+            for (let i = toBeDeletedRowIndex; i < this.rowCounts; ++i) {
                 rowHeaders.eq(i - 1).children().get(0).innerHTML = i
             }
         }
-         else {
+        else {
             let toBeDeletedTDIndex = $(target).index()
             console.log(toBeDeletedTDIndex)
 
@@ -174,10 +175,10 @@ class Util {
             console.log(this.columnCounts)
 
             let columnHeaders = $('.columnHeader')
-            for(let i = toBeDeletedTDIndex; i < this.columnCounts; ++i) {
+            for (let i = toBeDeletedTDIndex; i < this.columnCounts; ++i) {
                 let originalContent = columnHeaders.eq(i).children().get(0).innerHTML
                 columnHeaders.eq(i).children().get(0).innerHTML = String.fromCharCode(
-                                                                    originalContent.charCodeAt(0) - 1)
+                    originalContent.charCodeAt(0) - 1)
             }
         }
     }
@@ -189,7 +190,7 @@ class Util {
         let myTable = $('#myTable')
         let menuLayout = $('<div class="menuLayout"></div>')
         myTable.append(menuLayout)
-        for(let option of this.menuOptions) {
+        for (let option of this.menuOptions) {
             menuLayout.append(`<button class="option" id=${option}>${option}</button>`)
         }
         menuLayout.css({'visibility': 'hidden'})
@@ -200,15 +201,16 @@ class Util {
      *
      * @public
      */
-    showMenu(){
+    showMenu() {
         this.makeOptionsMenu()
     }
+
     /**
      * Set the menu's position which it should be placed
      *
      * @param {object} target
      */
-    setMenuPosition(evt){
+    setMenuPosition(evt) {
         let posX = evt.clientX + window.pageXOffset
         let posY = evt.clientY + window.pageYOffset
         console.log('mouseX: ' + evt.clientX + ' mouseY: ' + evt.clientY)
@@ -228,43 +230,67 @@ class Util {
     resize(mousedownEvt) {
         let target = mousedownEvt.target
         let className = $(target).attr('class')
-        let baseLine = $('#myTable').innerHeight()
-        let mouseToResizeDivBorder = mousedownEvt.clientX - target.getBoundingClientRect().left
+        if (className === 'horizontalDiv' || className === 'verticalDiv') {
+            let baseLine = $('#myTable').innerHeight()
+            let mouseToResizeDivBorder = mousedownEvt.clientX - target.getBoundingClientRect().left
 
-        if (className === 'horizontalDiv') {
-            console.log('mouse down on row horizontalDiv.....')
-            baseLine = $('#myTable').innerWidth()
-            mouseToResizeDivBorder = mousedownEvt.clientY - target.getBoundingClientRect().top
-        }
-        console.log('baseLine: ' + baseLine + ' mouseToResizeDivBirder: ' + mouseToResizeDivBorder)
-        $(target).addClass('selected')
-
-        $(`<style type="text/css" id="dynamic"></style>`).appendTo('head')
-
-        let afterProperty = 'height'
-        if (className === 'horizontalDiv') {
-            afterProperty = 'width'
-        }
-
-        $('#dynamic').text(
-            `.horizontalDiv.selected:after {
-                    ${afterProperty}: ${baseLine} + px;
-             }`
-        )
-
-        let mouseMoveHandler = (mousemoveEvent) => {
-            mousemoveEvent.preventDefault()
-            let offset = 0
-            if (className === 'verticalDiv') {
-                offset = mousemoveEvent.clientX - target.getBoundingClientRect().left - mouseToResizeDivBorder
-                $(target).css({'left': `${target.offsetLeft} + ${offset}` + 'px', 'right': 'inherit'})
-            } else {
-                offset = mousemoveEvent.clientY - target.getBoundingClientRect().top - mouseToResizeDivBorder
-                $(target).css({'left': `${target.offsetTop} + ${offset}` + 'px', 'left': '0px'})
+            if (className === 'horizontalDiv') {
+                console.log('mouse down on row horizontalDiv.....')
+                baseLine = $('#myTable').innerWidth()
+                mouseToResizeDivBorder = mousedownEvt.clientY - target.getBoundingClientRect().top
             }
-        }
+            console.log('baseLine: ' + baseLine + ' mouseToResizeDivBirder: ' + mouseToResizeDivBorder)
+            $(target).addClass('selected')
 
-        $('#myTable').on('mousemove', mouseMoveHandler)
+            $(`<style type="text/css" id="dynamic"></style>`).appendTo('head')
+
+            let afterProperty = 'height'
+            if (className === 'horizontalDiv') {
+                afterProperty = 'width'
+            }
+
+            $('#dynamic').text(
+                `.${className}.selected:after {
+                    ${afterProperty}: ${baseLine}px;       
+             }`
+            )
+
+            let mouseMoveHandler = (mousemoveEvent) => {
+                mousemoveEvent.preventDefault()
+                let offset = 0
+                if (className === 'verticalDiv') {
+                    offset = mousemoveEvent.clientX - target.getBoundingClientRect().left - mouseToResizeDivBorder
+                    let left = target.offsetLeft + offset + 'px'
+                    console.log('left: ' + left)
+                    $(target).css({'left': left, 'right': 'inherit'})
+                    $(target).parent().css({'width': left})
+                } else {
+                    if (className === 'horizontalDiv') {
+                        offset = mousemoveEvent.clientY - target.getBoundingClientRect().top - mouseToResizeDivBorder
+                        let top = target.offsetTop + offset + 'px'
+                        console.log('top: ' + top)
+                        $(target).css({'top': top, 'left': '0px'})
+                        $(target).parent().css({'height': top})
+                    }
+                }
+            }
+
+            let mouseupHandler = (mouseupEvt) => {
+                $('#myTable').off('mousedown')
+                $('#myTable').off('mousemove')
+                let target = mouseupEvt.target
+                let className = $(target).attr('class')
+                let targetIndex = $(target).index()
+                let rows = $('.tr')
+                if(className === 'verticalDiv') {
+                    
+                } else {
+
+                }
+            }
+            $('#myTable').on('mousemove', mouseMoveHandler)
+            $('#myTable').on('mouseup', mouseupHandler)
+        }
     }
 
 
