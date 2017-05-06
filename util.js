@@ -297,17 +297,19 @@ class Util {
                         $(target).css({'top': top + 'px', 'left': '0px'})
 
                         $(target).parent().css({'height': (top + target.clientHeight / 2) + 'px'})
-                        let idName = $(target).parent().parent().children().eq(targetIndex).attr('id')
-                        if(idName === 'waitToBeInput') {
-                            $('#input').css({'height': (top + target.clientHeight / 2) - 2 + 'px'})
-                        }
+                        $.each($(target).parent().parent().children(), (index, elem) => {
+                            let idName = $(elem).attr('id')
+                            if(idName === 'waitToBeInput') {
+                                $('#input').css({'height': (top + target.clientHeight / 2) - 2 + 'px'})
+                            }
+                        })
+
                     }
                 }
             }
 
             let mouseupHandler = (mouseupEvt) => {
                 $('#myTable').off('mousemove')
-                $('.cell').removeAttr('id')
                 let className = $(target).attr('class')
                 let targetIndex = $(target).parent().index()
 
@@ -323,7 +325,17 @@ class Util {
                         let tableCell = $(row).children().eq(targetIndex)
                         tableCell.css({'width': newWidth + 'px'})
                         if(tableCell.attr('id') === 'waitToBeInput') {
-                            $('#input').css({'width': newWidth + 'px'})
+                            $('#input').css({'width': newWidth - 2 + 'px'})
+                        }else {
+                            let inputDiv = $('#waitToBeInput')
+                            if(inputDiv.length) {
+                                let [top, left] = [[inputDiv.get(0).getBoundingClientRect().top + window.pageYOffset],
+                                    [inputDiv.get(0).getBoundingClientRect().left + window.pageXOffset]]
+                                $('#input').css({
+                                    'top': top + 'px',
+                                    'left': left + 'px',
+                                })
+                            }
                         }
                     })
                 } else {
@@ -335,7 +347,17 @@ class Util {
                         console.log('type: ' + typeof td + 'cellIndex' + td.cellIndex)
                         $(td).css({'height': newHeight + 'px', 'line-height': newHeight + 'px'})
                         if($(td).attr('id') === 'waitToBeInput') {
-                            $(td).css({'height': newHeight + 'px'})
+                            $('#input').css({'height': newHeight -2 + 'px'})
+                        } else {
+                            let inputDiv = $('#waitToBeInput')
+                            if(inputDiv.length) {
+                                let [top, left] = [[inputDiv.get(0).getBoundingClientRect().top + window.pageYOffset],
+                                    [inputDiv.get(0).getBoundingClientRect().left + window.pageXOffset]]
+                                $('#input').css({
+                                    'top': top + 'px',
+                                    'left': left + 'px',
+                                })
+                            }
                         }
                     })
                 }
@@ -354,11 +376,16 @@ class Util {
      */
     input(evt) {
         let target = evt.target
+        if(target.nodeName === 'TEXT') {
+            target = target.parentNode
+        }
         let className = $(target).attr('class')
 
         if (className === 'cell') {
             $('#input').off()  // remove all the event handler to keep clear
-            $('#input').text('')
+            if($('#waitToBeInput')) {  // remove last div for input
+                $('#waitToBeInput').removeAttr('id', 'waitToBeInput')
+            }
             $(target).attr('id', 'waitToBeInput')
             $('.menuLayout').css({'visibility': 'hidden'})
 
@@ -366,6 +393,7 @@ class Util {
                 target.getBoundingClientRect().left + window.pageXOffset]
 
 
+            console.log('top:.....: ' + top + ' left.....: ' + left )
             let inputDivWidth = target.clientWidth - 2
             let inputDivHeight = target.clientHeight - 2
             let backgroundColor = $(target).css('background-color')
@@ -375,27 +403,39 @@ class Util {
                 'height': inputDivHeight,
                 'border': '2px solid black',
                 'visibility': 'visible',
-                'background-color': backgroundColor,
             }).animate({'left':left + 'px', 'top': top + 'px'}, 120)
 
             let inputDiv = $('#input')
             let textNode = target.firstElementChild
-            let getContentFromCell = (dblclickEvt) => {
-                inputDiv.text(textNode.innerHTML)
-                textNode.innerHTML = ''
+            inputDiv.text($(textNode).text())
+            let getContentFromCell = (evt) => {
                 $(inputDiv).attr('contenteditable', true)
             }
             let extractContentToCell = () => {
                 textNode.innerHTML = inputDiv.text()
-                $(inputDiv).css({'visibility': 'hidden'})
+                inputDiv.css({'visibility': 'hidden'})
+                inputDiv.text('')
                 $('#myTable').off('scroll')
             }
             let test = (evt) => {
                 evt.preventDefault()
             }
+
+            let changePosition = (scrollEvt) => {
+                let [top, left] = [target.getBoundingClientRect().top + window.pageYOffset,
+                    target.getBoundingClientRect().left + window.pageXOffset]
+                $('#input').css({
+                    'width': inputDivWidth + 'px',
+                    'height': inputDivHeight,
+                    'border': '2px solid black',
+                    'visibility': 'visible',
+                    'background-color': backgroundColor,
+                    'display': 'fixed'
+                }).animate({'left':left + 'px', 'top': top + 'px'}, 0)
+            }
             $('#input').on('dblclick', getContentFromCell)
             $('#input').on('blur', extractContentToCell)
-            $('#myTable').on('scroll', extractContentToCell)
+            $('#myTable').on('scroll', changePosition)
             $('#input').on('keypress', (evt) => {
                 if(evt.which === 13) {
                     extractContentToCell()

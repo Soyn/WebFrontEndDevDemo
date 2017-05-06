@@ -8,8 +8,8 @@ div#container {
 }
 
 div#myTable {
-    width: 800px;
-    height: 1000px;
+    /*width: 800px;
+    height: 1000px;*/
     background-color: white;
     overflow: auto;
     white-space: nowrap;
@@ -26,6 +26,7 @@ div.cell {
     vertical-align: top;
     overflow: hidden;
     user-select: none;
+    background-color: white;
 }
 
 div.tr{
@@ -85,7 +86,7 @@ div.tr{
     position: absolute;
     right: -7px;
     top: 0px;
-    z-index: 1;
+    z-index: 99;
 }
 
 
@@ -100,6 +101,7 @@ div.tr{
     height: 20px;
     position: absolute;
     border-left: 1px solid #94bba4;
+    z-index: 2;
 }
 
 
@@ -113,7 +115,7 @@ div.horizontalDiv {
     position: absolute;
     left: 0;
     bottom: -6px;
-    z-index: 1;
+    z-index: 99;
 }
 
 .horizontalDiv:after {
@@ -125,6 +127,7 @@ div.horizontalDiv {
     bottom: 5px;
     left: 0px;
     border-top: 1px solid #94bba4;
+    z-index: 2;
 }
 
 .horizontalDiv.selected,
@@ -177,7 +180,8 @@ div.menuLayout {
     display: block;
     visibility: hidden;
     position: absolute;
-    z-index: 99;
+    z-index: 1;
+    background-color: white;
 }
 
 text {
