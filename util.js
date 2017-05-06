@@ -282,19 +282,32 @@ class Util {
                     console.log('left: ' + left)
                     $(target).css({'left': left + 'px', 'right': 'inherit'})
                     $(target).parent().css({'width': (left + target.clientWidth / 2) + 'px'})
+                    let targetIndex = $(target).parent().index()
+                    $.each($('.tr'), (index, value) => {
+                        let idName = $(value).children().eq(targetIndex).attr('id')
+                        if( idName=== 'waitToBeInput') {
+                            $('#input').css({'width': (left + target.clientWidth / 2) - 2 + 'px'})
+                        }
+                    })
                 } else {
                     if (className === 'horizontalDiv') {
                         offset = mousemoveEvent.clientY - target.getBoundingClientRect().top - mouseToResizeDivBorder
                         let top = target.offsetTop + offset
                         console.log('top: ' + top)
                         $(target).css({'top': top + 'px', 'left': '0px'})
+
                         $(target).parent().css({'height': (top + target.clientHeight / 2) + 'px'})
+                        let idName = $(target).parent().parent().children().eq(targetIndex).attr('id')
+                        if(idName === 'waitToBeInput') {
+                            $('#input').css({'height': (top + target.clientHeight / 2) - 2 + 'px'})
+                        }
                     }
                 }
             }
 
             let mouseupHandler = (mouseupEvt) => {
                 $('#myTable').off('mousemove')
+                $('.cell').removeAttr('id')
                 let className = $(target).attr('class')
                 let targetIndex = $(target).parent().index()
 
@@ -307,7 +320,11 @@ class Util {
 
                     $.map(rows, (row) => {
                         console.log('type: ' + typeof row + ' rowIndex: ' + row.cellIndex)
-                        $(row).children().eq(targetIndex).css({'width': newWidth + 'px'})
+                        let tableCell = $(row).children().eq(targetIndex)
+                        tableCell.css({'width': newWidth + 'px'})
+                        if(tableCell.attr('id') === 'waitToBeInput') {
+                            $('#input').css({'width': newWidth + 'px'})
+                        }
                     })
                 } else {
                     let newHeight = $(target).parent().innerHeight()
@@ -317,6 +334,9 @@ class Util {
                     $.map(tds, (td) => {
                         console.log('type: ' + typeof td + 'cellIndex' + td.cellIndex)
                         $(td).css({'height': newHeight + 'px', 'line-height': newHeight + 'px'})
+                        if($(td).attr('id') === 'waitToBeInput') {
+                            $(td).css({'height': newHeight + 'px'})
+                        }
                     })
                 }
                 $(target).removeClass('selected')
@@ -335,25 +355,22 @@ class Util {
     input(evt) {
         let target = evt.target
         let className = $(target).attr('class')
+
         if (className === 'cell') {
             $('#input').off()  // remove all the event handler to keep clear
             $('#input').text('')
+            $(target).attr('id', 'waitToBeInput')
             $('.menuLayout').css({'visibility': 'hidden'})
+
             let [top, left] = [target.getBoundingClientRect().top + window.pageYOffset,
                 target.getBoundingClientRect().left + window.pageXOffset]
 
-            console.log('target.getBoundingClientRect().top: ' + target.getBoundingClientRect().top +
-                ' target.getBoundingClientRect().left: ' + target.getBoundingClientRect().left)
-            console.log('window.pageYOffset: ' + window.pageYOffset + ' window.pageYOffset: ' + window.pageYOffset)
-            console.log('top: ' + top + ' left: ' + left)
+
             let inputDivWidth = target.clientWidth - 2
             let inputDivHeight = target.clientHeight - 2
             let backgroundColor = $(target).css('background-color')
-            console.log('className: ' + className)
 
             $('#input').css({
-                //'top': top + 'px',
-                //'left': left + 'px',
                 'width': inputDivWidth + 'px',
                 'height': inputDivHeight,
                 'border': '2px solid black',
